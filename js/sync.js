@@ -66,6 +66,15 @@ export async function signIn(email, password, signUp = false) {
 
 export async function signOut() { (await getClient())?.auth.signOut(); }
 
+// the old site's cloud save (read only, from the old table)
+export async function fetchV1Cloud() {
+  const sb = await getClient();
+  if (!sb || !sync.user) throw new Error('Sign in first.');
+  const { data, error } = await sb.from('user_saves').select('data').eq('id', sync.user.id).maybeSingle();
+  if (error) throw error;
+  return data?.data || null;
+}
+
 // needs the delete_my_account function from the readme. the cloud save goes with it (on delete cascade)
 export async function deleteAccount() {
   const sb = await getClient();

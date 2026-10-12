@@ -1,6 +1,7 @@
 import { html, useEffect, useState } from '../lib.js';
 import { save, ui, setUi, commit, replaceSave, emptySave, toast } from '../store.js';
-import { syncConfigured, useSync, signIn, signOut, resolveConflict, deleteAccount } from '../sync.js';
+import { syncConfigured, useSync, signIn, signOut, resolveConflict, deleteAccount, fetchV1Cloud } from '../sync.js';
+import { looksLikeV1, localV1, importV1 } from '../import-v1.js';
 import { WIKI_PAGE } from '../wiki.js';
 import { allIslandImages, setIslandImage } from './islands.js';
 import { relTime, plural } from '../util.js';
@@ -21,10 +22,12 @@ function importSave() {
     if (!f) return;
     try {
       const data = JSON.parse(await f.text());
-      if (data.app !== 'msm-companion' || data.version !== 2) {
-        const looksV1 = data && typeof data.owned === 'object' && ('zapTracked' in data || 'wubboxBoxed' in data);
-        throw new Error(looksV1 ? 'This is a save from the old site. Importing those is coming soon.' : "This doesn't look like an MSM Companion save file.");
+      if (looksLikeV1(data)) {
+        const { islandImages, ...rest } = data;
+        importV1(rest, islandImages);
+        return;
       }
+      if (data.app !== 'msm-companion' || data.version !== 2) throw new Error("This doesn't look like an MSM Companion save file.");
       commit(() => {}, { undoable: 'Loaded save file' }); // snapshot first so it can be undone
       replaceSave({ ...data.save, updatedAt: Date.now() });
       Object.entries(data.islandImages || {}).forEach(([k, v]) => setIslandImage(k, v));
@@ -92,6 +95,29 @@ function Account() {
   </form>`;
 }
 
+function OldSite() {
+  const s = useSync();
+  const [busy, setBusy] = useState(false);
+  const local = localV1();
+  const fromCloud = async () => {
+    setBusy(true);
+    try {
+      const d = await fetchV1Cloud();
+      if (!looksLikeV1(d)) throw new Error('No old cloud save found for this account.');
+      importV1(d);
+    } catch (e) { toast(e.message, { tone: 'error', ms: 8000 }); }
+    setBusy(false);
+  };
+  return html`<div class="card"><h2>Import from the old site</h2>
+    <p class="muted">Bring over your collection, zap trackers, Wubboxes, island skins and plan images. It's added to what you already have here.</p>
+    <div class="row">
+      ${local && html`<button class="btn" onClick=${() => importV1(local.data, local.images)}><${Icon} name="download" size=${16} />From this browser</button>`}
+      ${s.user && html`<button class="btn" disabled=${busy} onClick=${fromCloud}><${Icon} name="sync" size=${16} />From your old cloud save</button>`}
+    </div>
+    <p class="muted small">${local ? '' : "No old-site progress found in this browser. "}${s.user ? '' : 'Sign in to import your old cloud save. '}You can also load a save file from the old site with Load save file.</p>
+  </div>`;
+}
+
 export function SettingsView() {
   const [confirmReset, setConfirmReset] = useState(false);
   const owned = Object.values(save.owned).reduce((n, row) => n + Object.keys(row).length, 0);
@@ -113,6 +139,7 @@ export function SettingsView() {
       <p class="muted small">${plural(owned, 'owned entry', 'owned entries')} · ${plural(save.zaps.length, 'zap target')} ·
         ${boxed} boxed · ${plural(imgs, 'island image')}${save.updatedAt ? ` · last change ${relTime(save.updatedAt)}` : ''}</p>
     </div>
+    <${OldSite} />
     <div class="card danger-zone"><h2>Reset</h2>
       <p class="muted">Clear all progress on this device. Island images are kept.</p>
       <button class="btn danger" onClick=${() => setConfirmReset(true)}><${Icon} name="trash" size=${16} />Reset all progress</button>

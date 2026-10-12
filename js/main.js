@@ -3,6 +3,7 @@ import { ui, setUi, useStore, detail } from './store.js';
 import { initSync, useSync } from './sync.js';
 import { Icon, Toasts } from './ui.js';
 import { DetailPanel, SearchPalette } from './overlays.js';
+import { ImportReport } from './import-v1.js';
 import { CollectionView } from './views/collection.js';
 import { BreedView } from './views/breed.js';
 import { AvailableView } from './views/available.js';
@@ -132,6 +133,7 @@ function App() {
 
     ${detail && html`<${DetailPanel} />`}
     <${SearchPalette} open=${searching} onClose=${() => setSearching(false)} go=${go} />
+    <${ImportReport} />
     <${Toasts} />
     <${UpdateBanner} />`;
 }

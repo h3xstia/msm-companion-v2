@@ -9,7 +9,7 @@ self.addEventListener('install', (event) => {
     './', 'index.html', 'css/app.css', 'manifest.json',
     'data/islands.js', 'data/monsters.js', 'data/wubbox.js',
     'js/main.js', 'js/lib.js', 'js/util.js', 'js/data.js', 'js/store.js', 'js/ui.js', 'js/overlays.js',
-    'js/breeding.js', 'js/wiki.js', 'js/sync.js',
+    'js/breeding.js', 'js/wiki.js', 'js/sync.js', 'js/import-v1.js',
     'js/views/collection.js', 'js/views/breed.js', 'js/views/available.js', 'js/views/database.js',
     'js/views/zapping.js', 'js/views/wubbox.js', 'js/views/islands.js', 'js/views/settings.js',
   ])));
