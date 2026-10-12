@@ -1,9 +1,9 @@
 import { html, useEffect, useState } from '../lib.js';
-import { save, ui, setUi, commit, replaceSave, emptySave, toast } from '../store.js';
+import { save, ui, setUi, commit, replaceSave, emptySave, toast, storageFull, saveNow } from '../store.js';
 import { syncConfigured, useSync, signIn, signOut, resolveConflict, deleteAccount, fetchV1Cloud } from '../sync.js';
-import { looksLikeV1, localV1, importV1 } from '../import-v1.js';
+import { looksLikeV1, localV1, importV1, removeLocalV1 } from '../import-v1.js';
 import { WIKI_PAGE } from '../wiki.js';
-import { allIslandImages, setIslandImage } from './islands.js';
+import { allIslandImages, setIslandImage } from '../images.js';
 import { relTime, plural } from '../util.js';
 import { Icon, Segmented, Dialog } from '../ui.js';
 
@@ -30,7 +30,7 @@ function importSave() {
       if (data.app !== 'msm-companion' || data.version !== 2) throw new Error("This doesn't look like an MSM Companion save file.");
       commit(() => {}, { undoable: 'Loaded save file' }); // snapshot first so it can be undone
       replaceSave({ ...data.save, updatedAt: Date.now() });
-      Object.entries(data.islandImages || {}).forEach(([k, v]) => setIslandImage(k, v));
+      for (const [k, v] of Object.entries(data.islandImages || {})) await setIslandImage(k, v);
     } catch (e) {
       toast(e.message || "Couldn't read that file", { tone: 'error', ms: 8000 });
     }
@@ -98,7 +98,16 @@ function Account() {
 function OldSite() {
   const s = useSync();
   const [busy, setBusy] = useState(false);
+  const [confirmFree, setConfirmFree] = useState(false);
+  const [, bump] = useState(0);
   const local = localV1();
+  const free = () => {
+    removeLocalV1();
+    setConfirmFree(false);
+    bump((x) => x + 1);
+    const ok = saveNow();
+    toast(ok ? 'Space freed, your progress is saved on this device again' : 'Still not enough space to save', ok ? {} : { tone: 'error' });
+  };
   const fromCloud = async () => {
     setBusy(true);
     try {
@@ -115,6 +124,12 @@ function OldSite() {
       ${s.user && html`<button class="btn" disabled=${busy} onClick=${fromCloud}><${Icon} name="sync" size=${16} />From your old cloud save</button>`}
     </div>
     <p class="muted small">${local ? '' : "No old-site progress found in this browser. "}${s.user ? '' : 'Sign in to import your old cloud save. '}You can also load a save file from the old site with Load save file.</p>
+    ${local && html`<div class="row"><button class="btn ghost sm danger" onClick=${() => setConfirmFree(true)}><${Icon} name="trash" size=${14} />Remove old-site data from this browser</button></div>`}
+    <${Dialog} open=${confirmFree} onClose=${() => setConfirmFree(false)} title="Remove old-site data?"
+      footer=${html`<button class="btn ghost" onClick=${() => setConfirmFree(false)}>Cancel</button><button class="btn danger" onClick=${free}>Remove</button>`}>
+      <p>Both sites share this browser's storage, which is limited to about 5 MB. This clears the old site's copy of your progress and island images from this browser to make room.</p>
+      <p class="muted">Import first if you haven't. Your old cloud save isn't touched, so the old site will still load it when you sign in there.</p>
+    <//>
   </div>`;
 }
 
@@ -125,6 +140,8 @@ export function SettingsView() {
   const imgs = Object.keys(allIslandImages()).length;
   return html`<section class="pane">
     <header class="pane-head"><div><h1>Settings</h1></div></header>
+    ${storageFull && html`<div class="notice"><strong>This browser's storage is full, so progress can't be saved on this device.</strong>
+      Use "Remove old-site data from this browser" below to make room.</div>`}
     <div class="settings-grid">
     <div class="card"><h2>Appearance</h2>
       <${Segmented} value=${ui.theme} options=${[['auto', 'Match device'], ['dark', 'Dark'], ['light', 'Light']]} onChange=${(v) => setUi({ theme: v })} />

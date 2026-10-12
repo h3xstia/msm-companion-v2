@@ -3,26 +3,8 @@ import { islands, islandByName, GROUPS, wubbox, wubboxList, wubboxKey, WUBBOX_TY
 import { cx, pct, plural, islandIconSrc } from '../util.js';
 import { save, ui, setUi, toast } from '../store.js';
 import { islandCount } from './collection.js';
+import { getIslandImage, setIslandImage, allIslandImages } from '../images.js';
 import { Icon, Progress, Empty } from '../ui.js';
-
-const IMG_PREFIX = 'msm2:img:';
-export const getIslandImage = (name) => { try { return localStorage.getItem(IMG_PREFIX + name); } catch { return null; } };
-export function setIslandImage(name, dataUrl) {
-  try {
-    if (dataUrl) localStorage.setItem(IMG_PREFIX + name, dataUrl); else localStorage.removeItem(IMG_PREFIX + name);
-    return true;
-  } catch { return false; }
-}
-export function allIslandImages() {
-  const out = {};
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k.startsWith(IMG_PREFIX)) out[k.slice(IMG_PREFIX.length)] = localStorage.getItem(k);
-    }
-  } catch { /* ignore */ }
-  return out;
-}
 
 function compress(file, maxPx = 1920, quality = 0.8) {
   return new Promise((resolve, reject) => {
@@ -51,7 +33,6 @@ function wubboxSummary(name) {
 }
 
 function IslandDetail({ name, go }) {
-  const [, bump] = useState(0);
   const [big, setBig] = useState(false);
   const img = getIslandImage(name);
   const [owned, total] = islandCount(name) || [0, 0];
@@ -65,11 +46,8 @@ function IslandDetail({ name, go }) {
       const f = inp.files[0];
       if (!f) return;
       try {
-        let data = await compress(f);
-        if (!setIslandImage(name, data)) data = await compress(f, 1280, 0.7);
-        if (!setIslandImage(name, data)) throw new Error('too large');
-        bump((x) => x + 1);
-      } catch { toast("Couldn't save that image, try a smaller one", { tone: 'error' }); }
+        await setIslandImage(name, await compress(f));
+      } catch { toast("Couldn't read that image", { tone: 'error' }); }
     };
     inp.click();
   };
@@ -91,7 +69,7 @@ function IslandDetail({ name, go }) {
     </div>
     <div class="section-head"><h2>Island plan</h2>
       ${img && html`<div class="head-actions"><button class="btn ghost sm" onClick=${upload}><${Icon} name="upload" size=${14} />Replace</button>
-        <button class="btn ghost sm danger" onClick=${() => { setIslandImage(name, null); bump((x) => x + 1); }}><${Icon} name="trash" size=${14} />Remove</button></div>`}</div>
+        <button class="btn ghost sm danger" onClick=${() => setIslandImage(name, null)}><${Icon} name="trash" size=${14} />Remove</button></div>`}</div>
     ${img
       ? html`<button class=${cx('plan-img', big && 'big')} onClick=${() => setBig(!big)} aria-label="Toggle full size"><img src=${img} alt=${name + ' plan'} /></button>`
       : html`<button class="dropzone" onClick=${upload}><${Icon} name="image" size=${28} /><strong>Upload a plan or screenshot</strong>

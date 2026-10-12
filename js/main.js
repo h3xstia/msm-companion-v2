@@ -13,6 +13,7 @@ import { WubboxView } from './views/wubbox.js';
 import { IslandsView } from './views/islands.js';
 import { SettingsView } from './views/settings.js';
 import { cx } from './util.js';
+import { loadImages } from './images.js';
 
 const VIEWS = {
   collection: { label: 'Collection', icon: 'collection', View: CollectionView },
@@ -142,5 +143,6 @@ const initial = viewFromHash();
 if (initial) ui.view = initial;
 applyTheme(ui.theme);
 render(html`<${App} />`, document.getElementById('app'));
+loadImages();
 initSync();
 registerSW();

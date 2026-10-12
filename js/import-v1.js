@@ -2,7 +2,7 @@
 import { html, useEffect, useState } from './lib.js';
 import { byName } from './data.js';
 import { commit, zapEggs } from './store.js';
-import { setIslandImage } from './views/islands.js';
+import { setIslandImage } from './images.js';
 import { plural } from './util.js';
 import { Dialog } from './ui.js';
 
@@ -25,6 +25,17 @@ function eggName(key) {
   if (/^Mythical Flex$/i.test(key)) return 'Any Mythical';
   if (/^Any 10 of the 19 Rare Wublins$/i.test(key)) return 'Any Rare Wublin';
   return monsterName(key) || key;
+}
+
+// clears the old site's copy from this browser (its cloud save is untouched)
+export function removeLocalV1() {
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k === V1_KEY || k.startsWith(V1_IMG)) keys.push(k);
+  }
+  keys.forEach((k) => localStorage.removeItem(k));
+  return keys.length;
 }
 
 export const looksLikeV1 = (d) => !!d && typeof d === 'object' && typeof d.owned === 'object' &&
@@ -103,7 +114,7 @@ function convert(v1) {
 const listeners = new Set();
 
 // merges into the current save (nothing gets removed) and can be undone
-export function importV1(v1, images = {}) {
+export async function importV1(v1, images = {}) {
   const { out, report } = convert(v1);
   commit((s) => {
     for (const [isl, row] of Object.entries(out.owned)) Object.assign((s.owned[isl] ||= {}), row);
@@ -116,7 +127,7 @@ export function importV1(v1, images = {}) {
     }
   }, { undoable: 'Imported progress from the old site' });
   let imgs = 0;
-  for (const [isl, data] of Object.entries(images || {})) if (data && setIslandImage(isl, data)) imgs++;
+  for (const [isl, data] of Object.entries(images || {})) if (data && await setIslandImage(isl, data)) imgs++;
   report.images = imgs;
   listeners.forEach((f) => f(report));
   return report;

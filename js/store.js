@@ -44,9 +44,20 @@ const listeners = new Set();
 const changeHooks = new Set();
 function notify() { version++; derived = null; listeners.forEach((fn) => fn(version)); }
 
+export let storageFull = false;
 function persist() {
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch { /* quota */ }
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+    storageFull = false;
+    return true;
+  } catch {
+    if (!storageFull) toast("Couldn't save your progress on this device: browser storage is full. See Settings to free up space.", { tone: 'error', ms: 15000 });
+    storageFull = true;
+    return false;
+  }
 }
+export const saveNow = () => persist();
+export const refresh = () => notify();
 function persistUi() {
   try { localStorage.setItem(UI_KEY, JSON.stringify(ui)); } catch { /* quota */ }
 }
