@@ -1,6 +1,6 @@
 import { html } from '../lib.js';
 import { onIsland, entryDetails, howLabel } from '../data.js';
-import { entryTimes, cx, matches, pct, plural } from '../util.js';
+import { entryTimes, cx, matches, pct, plural, islandIconSrc } from '../util.js';
 import { save, ui, setUi, commit, isOwned, openDetail } from '../store.js';
 import { Icon, MonImg, ElemIcons, StatusTags, Progress, IslandPicker, RarityChips, SearchBox, Empty, Chip, Times } from '../ui.js';
 
@@ -56,9 +56,10 @@ export function CollectionView() {
     <${IslandPicker} value=${island} count=${islandCount} onChange=${(v) => setUi('col', { island: v })} />
     <section class="pane">
       <header class="pane-head">
-        <div>
-          <h1>${island}</h1>
-          <p class="muted">${owned} of ${all.length} owned · ${pct(owned, all.length)}%</p>
+        <div class="head-title">
+          <img class="island-icon-lg" src=${islandIconSrc(island)} alt="" onError=${(e) => (e.currentTarget.style.display = 'none')} />
+          <div><h1>${island}</h1>
+            <p class="muted">${owned} of ${all.length} owned · ${pct(owned, all.length)}%</p></div>
         </div>
         ${breeding && html`<${Chip} on=${skin} onClick=${() => commit((s) => { s.skins[island] = !skin; })}>
           <${Icon} name="sparkle" size=${14} /> Island skin${skin ? ' on' : ''}<//>`}

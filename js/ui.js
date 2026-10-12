@@ -1,6 +1,6 @@
 import { html, useEffect, useRef } from './lib.js';
 import { islands, GROUPS, RARITIES, isWildcard, wildcardElement, byName } from './data.js';
-import { portraitSrc, elementSrc, cx, pct } from './util.js';
+import { portraitSrc, elementSrc, islandIconSrc, cx, pct } from './util.js';
 import { toasts, dismissToast, openDetail, isAvailable, zapNeedsFor, wubNeedsFor } from './store.js';
 
 const PATHS = {
@@ -70,19 +70,25 @@ export function TokenImg({ token, island, size = 28 }) {
 export const MonLink = ({ name, island, children }) => html`
   <button class="link" onClick=${(e) => { e.stopPropagation(); openDetail(name, island); }}>${children || name}</button>`;
 
-export function StatusTags({ m, island, compact }) {
+// one zap tag: names the target if there's only one, otherwise the total still needed
+export function StatusTags({ m, island }) {
   const avail = isAvailable(m.name);
   const zaps = zapNeedsFor(m.name);
   const wubs = wubNeedsFor(m.name).filter((w) => !island || w.island === island);
   if (!avail && !zaps.length && !wubs.length) return null;
+  const zapTotal = zaps.reduce((n, z) => n + z.still, 0);
+  const zapTitle = ['Needed for zapping:', ...zaps.map((z) => `${z.zap.monster} (${z.zap.island}): ${z.still}`)].join('\n');
   return html`<span class="tags">
-    ${avail && html`<span class="tag tag-avail">${compact ? '' : 'Available'}</span>`}
-    ${zaps.map((z) => html`<span class="tag tag-zap" title=${`Zap: ${z.zap.monster} still needs ${z.still}`}>
-      ${compact ? '' : `${z.zap.monster} ×${z.still}`}</span>`).slice(0, compact ? 1 : 3)}
+    ${avail && html`<span class="tag tag-avail">Available</span>`}
+    ${zaps.length > 0 && html`<span class="tag tag-zap" title=${zapTitle}>
+      ${zaps.length === 1 ? `${zaps[0].zap.monster} ×${zapTotal}` : `Zap ×${zapTotal}`}</span>`}
     ${wubs.length > 0 && html`<span class="tag tag-wub" title=${wubs.map((w) => `${w.island} (${w.type})`).join(', ')}>
-      ${compact ? '' : 'Wubbox' + (wubs.length > 1 ? ' ×' + wubs.length : '')}</span>`}
+      ${'Wubbox' + (wubs.length > 1 ? ' ×' + wubs.length : '')}</span>`}
   </span>`;
 }
+
+export const IslandIcon = ({ name, size = 22 }) => html`<img class="isl-ico" src=${islandIconSrc(name)} alt="" loading="lazy"
+  style=${{ width: Math.round(size * 4 / 3), height: size }} onError=${(e) => (e.currentTarget.style.visibility = 'hidden')} />`;
 
 export const Progress = ({ value, max, tone }) => {
   const p = Math.min(100, pct(value, max));
@@ -132,7 +138,7 @@ export function IslandPicker({ value, onChange, count }) {
         ${list.map((i) => {
           const [a, b] = count(i.name);
           return html`<button class=${cx('island-item', value === i.name && 'on', a >= b && 'complete')} onClick=${() => onChange(i.name)}>
-            <span>${i.name}</span><span class="count">${a}/${b}</span></button>`;
+            <span class="isl-name"><${IslandIcon} name=${i.name} />${i.name}</span><span class="count">${a}/${b}</span></button>`;
         })}`)}
     </nav>`;
 }

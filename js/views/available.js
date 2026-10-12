@@ -1,18 +1,17 @@
 import { html, useEffect, useState } from '../lib.js';
-import { byName, howLabel } from '../data.js';
+import { byName, howLabel, entryDetails } from '../data.js';
 import { cx, plural, relTime } from '../util.js';
-import { save, commit, isAvailable, openDetail, purgeExpired, toast } from '../store.js';
+import { save, commit, isAvailable, openDetail, purgeExpired, toast, setUi } from '../store.js';
 import { syncFromWiki, wikiStale, WIKI_PAGE } from '../wiki.js';
 import { Deadline } from '../overlays.js';
-import { Icon, MonImg, Rarity, Empty } from '../ui.js';
+import { Icon, MonImg, Rarity, Empty, IslandIcon } from '../ui.js';
 
 let autoTried = false;
 
-function AvailCard({ name }) {
+function AvailCard({ name, go }) {
   const m = byName.get(name);
   const a = save.avail[name];
   if (!m) return null;
-  const ways = m.islands.slice(0, 3);
   return html`<div class=${cx('avail-card', a.chipless && 'chipless')}>
     <button class="avail-main" onClick=${() => openDetail(name)}>
       <${MonImg} m=${m} size=${52} />
@@ -21,12 +20,16 @@ function AvailCard({ name }) {
         <div class="meta"><${Rarity} r=${m.rarity} />${a.until ? html`<${Deadline} until=${a.until} />` : a.chipless ? html`<span class="muted small">Starshop / vessel</span>` : ''}</div>
       </div>
     </button>
-    <ul class="avail-ways">${ways.map((e) => html`<li><span>${e.island}</span><span class="muted">${e.combo ? e.combo.join(' + ') : howLabel(e)}</span></li>`)}
-      ${m.islands.length > 3 && html`<li class="muted">+${m.islands.length - 3} more islands</li>`}</ul>
+    <div class="avail-islands">${m.islands.map((e) => {
+      const how = e.combo ? e.combo.join(' + ') : [howLabel(e), ...entryDetails(m, e)].join(' · ');
+      return html`<button class="isl-btn" key=${e.island} title=${`${e.island}
+${how}`} aria-label=${`${e.island}: ${how}. Open in Collection`}
+        onClick=${() => { setUi('col', { island: e.island }); go('collection'); }}><${IslandIcon} name=${e.island} size=${30} /></button>`;
+    })}</div>
   </div>`;
 }
 
-export function AvailableView() {
+export function AvailableView({ go }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const run = (silent) => {
@@ -78,8 +81,8 @@ export function AvailableView() {
     ${!names.length
       ? html`<${Empty} icon="available" title="Nothing marked yet">Sync from the wiki to see what's on sale right now.<//>`
       : html`${catOrder.map((c) => html`<div class="section-head"><h2>${c}</h2><span class="muted">${byCat.get(c).length}</span></div>
-          <div class="avail-grid">${sortNames(byCat.get(c)).map((n) => html`<${AvailCard} key=${c + n} name=${n} />`)}</div>`)}
+          <div class="avail-grid">${sortNames(byCat.get(c)).map((n) => html`<${AvailCard} key=${c + n} name=${n} go=${go} />`)}</div>`)}
         ${manual.length > 0 && html`<div class="section-head"><h2>Added by you</h2><span class="muted">${manual.length}</span></div>
-          <div class="avail-grid">${sortNames(manual).map((n) => html`<${AvailCard} key=${n} name=${n} />`)}</div>`}`}
+          <div class="avail-grid">${sortNames(manual).map((n) => html`<${AvailCard} key=${n} name=${n} go=${go} />`)}</div>`}`}
   </section>`;
 }
