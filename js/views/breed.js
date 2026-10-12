@@ -3,7 +3,7 @@ import { byName, islands } from '../data.js';
 import { entryTimes, cx, matches, plural } from '../util.js';
 import { save, ui, setUi, isOwned, isAvailable, openDetail } from '../store.js';
 import { computeOffspring, sharesIsland, parentCandidates } from '../breeding.js';
-import { Icon, MonImg, ElemIcons, Rarity, Chip, Empty } from '../ui.js';
+import { Icon, MonImg, ElemIcons, Rarity, Chip, Empty, Times } from '../ui.js';
 
 function ParentPicker({ slot, label, other }) {
   const value = byName.get(ui.breed[slot]);
@@ -68,7 +68,7 @@ function ResultCard({ o }) {
       const t = entryTimes(o.entries[isl], !!save.skins[isl]);
       const owned = isOwned(isl, m.name);
       return html`<li class=${owned ? 'owned' : ''}><span>${owned && html`<${Icon} name="check" size=${12} />`}${isl}</span>
-        ${t && html`<span class="muted">${t.time} · ${t.enhanced}</span>`}</li>`;
+        <${Times} t=${t} skin=${!!save.skins[isl]} /></li>`;
     })}</ul>
   </button>`;
 }

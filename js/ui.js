@@ -35,6 +35,7 @@ const PATHS = {
   image: 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zM8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 15l-5-5L5 21',
   sparkle: 'M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z',
   user: 'M20 21a8 8 0 0 0-16 0M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+  fast: 'M13 19l7-7-7-7M5 19l7-7-7-7',
   egg: 'M12 21c-4 0-7-3-7-7.5S8.5 3 12 3s7 6 7 10.5S16 21 12 21z',
 };
 
@@ -50,6 +51,11 @@ export const ElemIcons = ({ list, size = 16, max = 6 }) => html`
   <span class="elems">${list.slice(0, max).map((el) => html`
     <img src=${elementSrc(el)} width=${size} height=${size} alt=${el} title=${el} loading="lazy"
       onError=${(e) => (e.currentTarget.style.visibility = 'hidden')} />`)}</span>`;
+
+export const Times = ({ t, skin }) => t && html`<span class="times">
+  <span class="t-normal" title=${skin ? 'Breeding time (with island skin)' : 'Breeding time'}>${t.time}</span>
+  <span class="t-enh" title="Enhanced breeding time"><${Icon} name="fast" size=${12} />${t.enhanced}</span>
+  ${skin && html`<span class="t-skin" title="Island skin: 10% faster"><${Icon} name="sparkle" size=${12} /></span>`}</span>`;
 
 export const Rarity = ({ r }) => html`<span class=${'rar rar-' + r.toLowerCase()}>${r}</span>`;
 

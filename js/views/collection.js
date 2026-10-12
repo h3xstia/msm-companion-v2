@@ -2,7 +2,7 @@ import { html } from '../lib.js';
 import { onIsland, entryDetails, howLabel } from '../data.js';
 import { entryTimes, cx, matches, pct, plural } from '../util.js';
 import { save, ui, setUi, commit, isOwned, openDetail } from '../store.js';
-import { Icon, MonImg, ElemIcons, StatusTags, Progress, IslandPicker, RarityChips, SearchBox, Empty, Chip } from '../ui.js';
+import { Icon, MonImg, ElemIcons, StatusTags, Progress, IslandPicker, RarityChips, SearchBox, Empty, Chip, Times } from '../ui.js';
 
 export const islandCount = (island) => {
   const list = onIsland.get(island) || [];
@@ -29,7 +29,7 @@ function MonsterCard({ m, e, island }) {
       <div class="mon-card-name">${m.name}</div>
       <div class="mon-card-meta"><span class=${'dot rar-' + m.rarity.toLowerCase()} title=${m.rarity}></span><${ElemIcons} list=${m.elements} size=${15} /></div>
       <div class="mon-card-how" title=${howLine(m, e)}>${howLine(m, e)}</div>
-      ${t && html`<div class="mon-card-time">${t.time} <span>· ${t.enhanced}</span></div>`}
+      ${t && html`<div class="mon-card-time"><${Times} t=${t} skin=${!!save.skins[island]} /></div>`}
       <${StatusTags} m=${m} island=${island} />
     </div>
     <button class="icon-btn sm mon-card-info" aria-label=${'Details for ' + m.name} onClick=${() => openDetail(m.name, island)}>

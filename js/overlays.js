@@ -4,7 +4,7 @@ import { entryTimes, timeLeft, urgency, cx, matches } from './util.js';
 import {
   save, detail, openDetail, closeDetail, isOwned, setOwned, isAvailable, zapNeedsFor, wubNeedsFor, setUi,
 } from './store.js';
-import { Icon, MonImg, ElemIcons, Rarity, TokenImg, MonLink, Dialog } from './ui.js';
+import { Icon, MonImg, ElemIcons, Rarity, TokenImg, MonLink, Dialog, Times } from './ui.js';
 
 export function EntryRow({ m, e, toggle = true }) {
   const t = entryTimes(e, !!save.skins[e.island]);
@@ -22,8 +22,7 @@ export function EntryRow({ m, e, toggle = true }) {
         <span class="egg-pill" title=${egg}><${TokenImg} token=${egg} island=${e.island} size=${20} />${egg} ×${n}</span>`)}
         ${e.limit && html`<span class="detail">Time limit: ${e.limit}</span>`}</div>`}
     </div>
-    ${t && html`<div class="entry-time" title="Normal / enhanced">
-      ${t.time}<small>${t.enhanced}</small>${save.skins[e.island] && html`<small class="skin">skin</small>`}</div>`}
+    ${t && html`<div class="entry-time"><${Times} t=${t} skin=${!!save.skins[e.island]} /></div>`}
     ${toggle && html`<label class="owned-toggle" title=${owned ? 'Owned' : 'Mark owned'}>
       <input type="checkbox" checked=${owned} onChange=${(ev) => setOwned(e.island, m.name, ev.currentTarget.checked)} />
       <span><${Icon} name="check" size=${14} /></span></label>`}
