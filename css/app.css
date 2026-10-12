@@ -481,15 +481,22 @@ main { margin-left: var(--sidebar); min-height: 100vh; }
 .egg.avail:not(.done) { border-color: color-mix(in srgb, var(--avail) 55%, transparent); }
 .egg-head { display: flex; gap: 10px; align-items: center; }
 .egg-img { border: 0; padding: 0; background: none; }
-.egg-name { min-width: 0; display: grid; }
+.egg-name { min-width: 0; display: grid; flex: 1; }
 .egg-name strong { font-size: 13px; line-height: 1.25; }
+.egg-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); margin-top: 1px; }
+.egg-status .tag { margin: 0; }
+.c-done { color: var(--owned); font-weight: 650; }
+.egg-count { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.egg-count small { font-size: 13px; font-weight: 600; color: var(--text-2); }
+.egg.done .egg-count { color: var(--owned); }
+.egg-bar { height: 4px; }
 .egg-counts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.egg-counts label { display: grid; gap: 3px; font-size: 11px; color: var(--text-3); font-weight: 650; text-transform: uppercase; letter-spacing: 0.05em; }
-.stepper { display: flex; align-items: center; border: 1px solid var(--border-strong); border-radius: 9px; background: var(--surface); overflow: hidden; height: 32px; }
-.stepper button { width: 30px; height: 100%; border: 0; background: none; color: var(--text-2); display: grid; place-items: center; }
+.egg-counts label { display: grid; gap: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.stepper { display: flex; align-items: center; border: 1px solid var(--border-strong); border-radius: 9px; background: var(--surface); overflow: hidden; height: 34px; }
+.stepper button { width: 32px; height: 100%; border: 0; background: none; color: var(--text); display: grid; place-items: center; }
 .stepper button:hover:not(:disabled) { background: var(--surface-3); color: var(--text); }
 .stepper button:disabled { opacity: 0.3; cursor: default; }
-.stepper input { width: 100%; min-width: 0; height: 100%; border: 0; border-radius: 0; text-align: center; padding: 0; background: none; font-weight: 650; -moz-appearance: textfield; }
+.stepper input { width: 100%; min-width: 0; height: 100%; border: 0; border-radius: 0; text-align: center; padding: 0; background: none; color: var(--text); font-size: 15px; font-weight: 700; -moz-appearance: textfield; }
 .stepper input::-webkit-inner-spin-button { display: none; }
 .stepper input:focus { box-shadow: none; }
 

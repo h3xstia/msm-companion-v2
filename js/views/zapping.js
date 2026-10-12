@@ -82,11 +82,15 @@ function EggRow({ z, egg, need }) {
       <button class="egg-img" onClick=${() => byName.has(egg) && openDetail(egg, z.island)} aria-label=${egg}>
         <${TokenImg} token=${egg} island=${z.island} size=${36} /></button>
       <div class="egg-name"><strong>${egg}</strong>
-        <span class="muted small">${done ? 'Done' : `${Math.max(0, need - sent - bred)} to go`} · needs ${need}${avail ? ' · ' : ''}${avail && html`<span class="tag tag-avail">Available</span>`}</span></div>
+        <span class="egg-status">${done ? html`<span class="c-done">Done</span>` : need - sent - bred > 0 ? `${need - sent - bred} left` : html`<span class="c-bred">${need - sent} to send</span>`}
+          ${avail && html`<span class="tag tag-avail">Available</span>`}</span></div>
+      <span class="egg-count" title=${`${Math.min(sent + bred, need)} of ${need} (${sent} sent, ${bred} bred)`}>${Math.min(sent + bred, need)}<small>/${need}</small></span>
     </div>
+    <div class="progress split-bar egg-bar"><span class="sent" style=${{ width: pct(Math.min(sent, need), need) + '%' }}></span>
+      <span class="bred" style=${{ width: pct(Math.min(bred, need - Math.min(sent, need)), need) + '%' }}></span></div>
     <div class="egg-counts">
-      <label><span>Sent</span><${Stepper} label="sent" value=${sent} max=${need} onChange=${(v) => set('sent', v)} /></label>
-      <label><span>Bred</span><${Stepper} label="bred" value=${bred} max=${need} onChange=${(v) => set('bred', v)} /></label>
+      <label class="c-sent"><span>Sent</span><${Stepper} label="sent" value=${sent} max=${need} onChange=${(v) => set('sent', v)} /></label>
+      <label class="c-bred"><span>Bred</span><${Stepper} label="bred" value=${bred} max=${need} onChange=${(v) => set('bred', v)} /></label>
     </div>
   </div>`;
 }
