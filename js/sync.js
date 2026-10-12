@@ -75,7 +75,7 @@ export async function fetchV1Cloud() {
   return data?.data || null;
 }
 
-// needs the delete_my_account function from the readme. the cloud save goes with it (on delete cascade)
+// needs the delete_my_account function set up in supabase. the cloud save goes with it (on delete cascade)
 export async function deleteAccount() {
   const sb = await getClient();
   const { error } = await sb.rpc('delete_my_account');
