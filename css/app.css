@@ -506,8 +506,12 @@ main { margin-left: var(--sidebar); min-height: 100vh; }
 .island-card { display: flex; gap: 12px; padding: 10px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); text-align: left; transition: border-color 0.15s; }
 .island-card:hover { border-color: var(--border-strong); }
 .island-card.complete { border-color: color-mix(in srgb, var(--owned) 35%, transparent); }
-.island-thumb { width: 64px; height: 64px; border-radius: 11px; background: var(--surface-2); display: grid; place-items: center; color: var(--text-3); overflow: hidden; flex-shrink: 0; }
-.island-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.island-thumb { position: relative; width: 84px; height: 63px; flex-shrink: 0; }
+.island-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.plan-badge { position: absolute; right: -4px; bottom: -4px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: var(--on-accent); border: 2px solid var(--surface); }
+.island-icon-lg { width: 112px; height: 84px; object-fit: contain; flex-shrink: 0; }
+.pane-head:has(.island-icon-lg) { align-items: center; }
 .island-card-body { flex: 1; min-width: 0; display: grid; gap: 4px; align-content: start; }
 .island-card-body .progress { height: 6px; margin-top: 2px; }
 .wub-mini { display: flex; gap: 5px; margin-top: 3px; }

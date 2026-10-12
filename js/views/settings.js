@@ -157,7 +157,7 @@ export function SettingsView() {
       ${useSync().user && html`<button class="btn danger sm" onClick=${() => document.dispatchEvent(new Event('msm:delete-account'))}><${Icon} name="trash" size=${14} />Delete account</button>`}
       <h3>About</h3>
       <p>MSM Companion is a fan-made tool and isn't affiliated with or endorsed by Big Blue Bubble. My Singing Monsters, its monsters and artwork belong to Big Blue Bubble Inc.</p>
-      <p>Availability data comes from the <a href=${WIKI_PAGE} target="_blank" rel="noopener">My Singing Monsters Wiki</a> on Fandom (CC BY-SA).</p>
+      <p>Availability data and island icons come from the <a href=${WIKI_PAGE} target="_blank" rel="noopener">My Singing Monsters Wiki</a> on Fandom (CC BY-SA).</p>
       <p>Accounts are for ages 13 and up.</p>
     </details>
     </div>

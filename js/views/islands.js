@@ -1,6 +1,6 @@
 import { html, useState } from '../lib.js';
 import { islands, islandByName, GROUPS, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES, onIsland } from '../data.js';
-import { cx, pct, plural } from '../util.js';
+import { cx, pct, plural, islandIconSrc } from '../util.js';
 import { save, ui, setUi, toast } from '../store.js';
 import { islandCount } from './collection.js';
 import { Icon, Progress, Empty } from '../ui.js';
@@ -75,7 +75,7 @@ function IslandDetail({ name, go }) {
   };
   return html`<section class="pane">
     <button class="btn ghost sm back" onClick=${() => setUi('isl', { island: '' })}><${Icon} name="chevron" class="flip" size=${16} />All islands</button>
-    <header class="pane-head"><div><h1>${name}</h1>
+    <header class="pane-head"><img class="island-icon-lg" src=${islandIconSrc(name)} alt="" onError=${(e) => (e.currentTarget.style.display = 'none')} /><div class="grow"><h1>${name}</h1>
       <p class="muted">${info.group} island · ${plural(total, 'monster')}${info.teleportLevel ? ` · ${info.teleportName || 'Teleport'} from level ${info.teleportLevel}` : ''}</p></div>
       <div class="head-actions">
         <button class="btn" onClick=${() => { setUi('col', { island: name }); go('collection'); }}><${Icon} name="collection" size=${16} />Collection</button>
@@ -113,7 +113,8 @@ export function IslandsView({ go }) {
           const [a, b] = islandCount(i.name);
           const wubs = wubboxSummary(i.name);
           return html`<button class=${cx('island-card', a >= b && 'complete')} key=${i.name} onClick=${() => setUi('isl', { island: i.name })}>
-            <div class="island-thumb">${images[i.name] ? html`<img src=${images[i.name]} alt="" loading="lazy" />` : html`<${Icon} name="islands" size=${26} />`}</div>
+            <div class="island-thumb"><img src=${islandIconSrc(i.name)} alt="" loading="lazy" onError=${(e) => (e.currentTarget.style.visibility = 'hidden')} />
+              ${images[i.name] && html`<span class="plan-badge" title="Has an island plan"><${Icon} name="image" size=${12} /></span>`}</div>
             <div class="island-card-body">
               <strong>${i.name}</strong>
               <span class="muted small">${a}/${b} owned · ${pct(a, b)}%</span>

@@ -137,6 +137,13 @@ def main():
             if how in ("Breed",) and "time" not in e:
                 warnings.append(f"{where}: no time")
 
+    icon_dir = os.path.join(ROOT, "images", "islands")
+    if os.path.isdir(icon_dir):
+        icons = set(os.listdir(icon_dir))
+        for n in island_names:
+            if n.lower() + ".webp" not in icons:
+                warnings.append(f"islands.js: no icon for {n} (images/islands/{n.lower()}.webp)")
+
     for n in island_names:
         if n not in used_islands:
             warnings.append(f"islands.js: no monsters on {n}")

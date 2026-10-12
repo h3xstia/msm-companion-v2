@@ -82,6 +82,7 @@ export function portraitFile(m, island) {
 
 export const portraitSrc = (m, island) => encodeURI(PORTRAITS + portraitFile(m, island)).replace(/\$/g, '%24');
 export const elementSrc = (el) => encodeURI('images/elements/' + el.toLowerCase() + '.png');
+export const islandIconSrc = (name) => encodeURI('images/islands/' + name.toLowerCase() + '.webp').replace(/\$/g, '%24');
 
 export const plural = (n, word, many = word + 's') => `${n} ${n === 1 ? word : many}`;
 export const cx = (...parts) => parts.filter(Boolean).join(' ');
