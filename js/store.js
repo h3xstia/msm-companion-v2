@@ -69,19 +69,31 @@ export function undo() {
 }
 
 // fn mutates the save. pass { undoable: 'text' } for an undo toast
+// opts.local = device-only change (wiki availability): saved here but doesn't count as progress for sync
 export function commit(fn, opts = {}) {
   if (opts.undoable) undoSnap = structuredClone(save);
   fn(save);
-  save.updatedAt = Date.now();
+  if (!opts.local) save.updatedAt = Date.now();
   persist(); notify();
-  changeHooks.forEach((fn) => fn(save));
+  if (!opts.local) changeHooks.forEach((fn) => fn(save));
   if (opts.undoable) toast(opts.undoable, { action: 'Undo', onAction: undo });
 }
 
-export function replaceSave(next) {
-  save = { ...emptySave(), ...next };
+// keepLocal: keep this device's availability (used when loading from the cloud)
+export function replaceSave(next, keepLocal = false) {
+  save = { ...emptySave(), ...next, ...(keepLocal ? { avail: save.avail, wiki: save.wiki } : {}) };
   persist(); notify();
 }
+
+// another tab saved: pick up its version instead of overwriting it later
+addEventListener('storage', (e) => {
+  if (e.key !== SAVE_KEY || !e.newValue) return;
+  try { save = { ...emptySave(), ...JSON.parse(e.newValue) }; notify(); } catch { /* ignore */ }
+});
+
+export const hasProgress = (s) => Object.values(s.owned || {}).some((r) => Object.keys(r).length) ||
+  (s.zaps || []).length > 0 || Object.values(s.boxed || {}).some((r) => Object.keys(r).length) ||
+  Object.values(s.skins || {}).some(Boolean);
 
 // setUi('col', { island }) or setUi({ view })
 export function setUi(section, patch) {
@@ -180,5 +192,5 @@ export function missingIslands(m) {
 export function purgeExpired() {
   const now = Date.now();
   const dead = Object.keys(save.avail).filter((k) => save.avail[k].until && save.avail[k].until <= now);
-  if (dead.length) commit((s) => dead.forEach((k) => delete s.avail[k]));
+  if (dead.length) commit((s) => dead.forEach((k) => delete s.avail[k]), { local: true });
 }

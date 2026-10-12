@@ -102,7 +102,7 @@ export function syncFromWiki() {
         }
       }
       s.wiki = { time: Date.now(), cats: cats.map((c) => c.name), unknown };
-    });
+    }, { local: true });
     return cats;
   })().finally(() => { running = null; });
   return running;

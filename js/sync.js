@@ -1,6 +1,6 @@
 // supabase sync. url + key get filled in by the deploy workflow
 // (uses a separate table so old site saves are left alone)
-import { save, replaceSave, onSaveChange, toast } from './store.js';
+import { save, replaceSave, onSaveChange, toast, hasProgress } from './store.js';
 import { useEffect, useState } from './lib.js';
 
 const SUPABASE_URL = '%%SUPABASE_URL%%';
@@ -87,7 +87,9 @@ export async function deleteAccount() {
 async function push() {
   const sb = await getClient();
   if (!sb || !sync.user) return;
-  const { error } = await sb.from(TABLE).upsert({ id: sync.user.id, data: save, updated_at: new Date().toISOString() });
+  // availability is per device (it comes from the wiki), so it isn't synced
+  const data = { ...save, avail: {}, wiki: null };
+  const { error } = await sb.from(TABLE).upsert({ id: sync.user.id, data, updated_at: new Date().toISOString() });
   if (error) { set({ status: 'error' }); return; }
   markSynced(save.updatedAt);
   set({ status: 'synced' });
@@ -102,18 +104,26 @@ async function pull() {
   const cloud = data?.data;
   if (!cloud) return push();
   const since = lastSynced();
+  if (!since) {
+    // first sync on this device: never let an empty device wipe the cloud
+    if (!hasProgress(save)) return useCloud(cloud);
+    if (!hasProgress(cloud)) return push();
+    return askUser(cloud);
+  }
   const localChanged = save.updatedAt > since;
   const cloudChanged = cloud.updatedAt > since;
   if (cloud.updatedAt === save.updatedAt || (!cloudChanged && !localChanged)) { set({ status: 'synced' }); return; }
-  if (localChanged && cloudChanged && since) {
-    set({ status: 'conflict', conflict: { cloud } }); // the user picks in Settings
-    return;
-  }
+  if (localChanged && cloudChanged) return askUser(cloud);
   if (cloud.updatedAt > save.updatedAt) useCloud(cloud); else push();
 }
 
+function askUser(cloud) {
+  set({ status: 'conflict', conflict: { cloud } });
+  toast('This device and your cloud save are different. Pick which to keep in Settings.', { ms: 10000 });
+}
+
 function useCloud(cloud) {
-  replaceSave(cloud);
+  replaceSave(cloud, true);
   markSynced(cloud.updatedAt);
   set({ status: 'synced', conflict: null });
   toast('Loaded your progress from the cloud');
