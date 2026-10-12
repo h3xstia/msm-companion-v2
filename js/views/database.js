@@ -59,13 +59,13 @@ export function DatabaseView() {
     <div class="filters">
       <${SearchBox} value=${f.q} onInput=${(v) => upd({ q: v })} />
       <select value=${f.rarity} onChange=${(e) => upd({ rarity: e.currentTarget.value })} aria-label="Rarity">
-        <option value="">All rarities</option>${RARITIES.map((r) => html`<option>${r}</option>`)}</select>
+        <option value="">All rarities</option>${RARITIES.map((r) => html`<option value=${r}>${r}</option>`)}</select>
       <select value=${f.cls} onChange=${(e) => upd({ cls: e.currentTarget.value })} aria-label="Class">
-        <option value="">All classes</option>${classes.map((c) => html`<option>${c}</option>`)}</select>
+        <option value="">All classes</option>${classes.map((c) => html`<option value=${c}>${c}</option>`)}</select>
       <select value=${f.elem} onChange=${(e) => upd({ elem: e.currentTarget.value })} aria-label="Element">
-        <option value="">All elements</option>${elements.map((c) => html`<option>${c}</option>`)}</select>
+        <option value="">All elements</option>${elements.map((c) => html`<option value=${c}>${c}</option>`)}</select>
       <select value=${f.island} onChange=${(e) => upd({ island: e.currentTarget.value })} aria-label="Island">
-        <option value="">All islands</option>${islands.map((i) => html`<option>${i.name}</option>`)}</select>
+        <option value="">All islands</option>${islands.map((i) => html`<option value=${i.name}>${i.name}</option>`)}</select>
     </div>
     <div class="toolbar">
       <div class="chips">${STATUSES.map(([k, label]) => html`<${Chip} on=${f.status.includes(k)} tone=${'st-' + k}
