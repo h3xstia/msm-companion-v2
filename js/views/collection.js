@@ -1,7 +1,7 @@
 import { html } from '../lib.js';
 import { onIsland, entryDetails, howLabel } from '../data.js';
 import { entryTimes, cx, matches, pct, plural } from '../util.js';
-import { islandIcon, skinName } from '../art.js';
+import { islandIcon, skinName, skinOn } from '../art.js';
 import { save, ui, setUi, commit, isOwned, openDetail } from '../store.js';
 import { Icon, MonImg, ElemIcons, StatusTags, Progress, IslandPicker, RarityChips, SearchBox, Empty, Chip, Times } from '../ui.js';
 
@@ -17,7 +17,7 @@ function howLine(m, e) {
 
 function MonsterCard({ m, e, island }) {
   const owned = isOwned(island, m.name);
-  const t = entryTimes(e, !!save.skins[island]);
+  const t = entryTimes(e, skinOn(island));
   const toggle = () => commit((s) => {
     const row = (s.owned[island] ||= {});
     if (owned) delete row[m.name]; else row[m.name] = 1;
@@ -30,7 +30,7 @@ function MonsterCard({ m, e, island }) {
       <div class="mon-card-name">${m.name}</div>
       <div class="mon-card-meta"><span class=${'dot rar-' + m.rarity.toLowerCase()} title=${m.rarity}></span><${ElemIcons} list=${m.elements} size=${15} /></div>
       <div class="mon-card-how" title=${howLine(m, e)}>${howLine(m, e)}</div>
-      ${t && html`<div class="mon-card-time"><${Times} t=${t} skin=${!!save.skins[island]} /></div>`}
+      ${t && html`<div class="mon-card-time"><${Times} t=${t} skin=${skinOn(island)} /></div>`}
       <${StatusTags} m=${m} island=${island} />
     </div>
     <button class="icon-btn sm mon-card-info" aria-label=${'Details for ' + m.name} onClick=${() => openDetail(m.name, island)}>
@@ -42,9 +42,8 @@ export function CollectionView() {
   const { island, rarity, hideOwned, q } = ui.col;
   const all = onIsland.get(island) || [];
   const owned = all.filter(({ m }) => isOwned(island, m.name)).length;
-  const breeding = all.some(({ e }) => e.time);
   const seasonal = skinName(island);
-  const skin = !!save.skins[island];
+  const skin = skinOn(island);
   const present = [...new Set(all.map(({ m }) => m.rarity))];
   const list = all.filter(({ m }) =>
     (!rarity || m.rarity === rarity) && (!hideOwned || !isOwned(island, m.name)) && matches(m.name, q));
@@ -63,8 +62,8 @@ export function CollectionView() {
           <div><h1>${island}</h1>
             <p class="muted">${owned} of ${all.length} owned · ${pct(owned, all.length)}%</p></div>
         </div>
-        ${(breeding || seasonal) && html`<${Chip} on=${skin} onClick=${() => commit((s) => { s.skins[island] = !skin; })}>
-          <${Icon} name="sparkle" size=${14} /> ${seasonal ? seasonal + ' skin' : 'Island skin'}${skin ? ' on' : ''}<//>`}
+        ${seasonal && html`<${Chip} on=${skin} onClick=${() => commit((s) => { s.skins[island] = !skin; })}>
+          <${Icon} name="sparkle" size=${14} /> ${seasonal} skin${skin ? ' on' : ''}<//>`}
       </header>
       <${Progress} value=${owned} max=${all.length} />
       <div class="toolbar">

@@ -1,5 +1,5 @@
 import { html, useEffect, useState } from '../lib.js';
-import { byName, howLabel, entryDetails } from '../data.js';
+import { byName, howLabel, entryDetails, islandByName, alwaysObtainable } from '../data.js';
 import { cx, plural, relTime } from '../util.js';
 import { save, commit, isAvailable, openDetail, purgeExpired, toast, setUi } from '../store.js';
 import { syncFromWiki, wikiStale, WIKI_PAGE } from '../wiki.js';
@@ -20,7 +20,7 @@ function AvailCard({ name, go }) {
         <div class="meta"><${Rarity} r=${m.rarity} />${a.until ? html`<${Deadline} until=${a.until} />` : a.chipless ? html`<span class="muted small">Starshop / vessel</span>` : ''}</div>
       </div>
     </button>
-    <div class="avail-islands">${m.islands.map((e) => {
+    <div class="avail-islands">${m.islands.filter((e) => !islandByName.get(e.island)?.hideInAvailable && !alwaysObtainable(m, e.island)).map((e) => {
       const how = e.combo ? e.combo.join(' + ') : [howLabel(e), ...entryDetails(m, e)].join(' · ');
       return html`<button class="isl-btn" key=${e.island} title=${`${e.island}
 ${how}`} aria-label=${`${e.island}: ${how}. Open in Collection`}

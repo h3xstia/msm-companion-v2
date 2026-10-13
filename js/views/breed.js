@@ -3,6 +3,7 @@ import { byName, islands } from '../data.js';
 import { entryTimes, cx, matches, plural } from '../util.js';
 import { save, ui, setUi, isOwned, isAvailable, openDetail } from '../store.js';
 import { computeOffspring, sharesIsland, parentCandidates } from '../breeding.js';
+import { skinOn } from '../art.js';
 import { Icon, MonImg, ElemIcons, Rarity, Chip, Empty, Times } from '../ui.js';
 
 function ParentPicker({ slot, label, other }) {
@@ -65,10 +66,10 @@ function ResultCard({ o }) {
         <${ElemIcons} list=${m.elements} size=${16} /></div>
     </div>
     <ul class="result-islands">${o.islands.map((isl) => {
-      const t = entryTimes(o.entries[isl], !!save.skins[isl]);
+      const t = entryTimes(o.entries[isl], skinOn(isl));
       const owned = isOwned(isl, m.name);
       return html`<li class=${owned ? 'owned' : ''}><span>${owned && html`<${Icon} name="check" size=${12} />`}${isl}</span>
-        <${Times} t=${t} skin=${!!save.skins[isl]} /></li>`;
+        <${Times} t=${t} skin=${skinOn(isl)} /></li>`;
     })}</ul>
   </button>`;
 }
