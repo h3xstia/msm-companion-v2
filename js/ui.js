@@ -1,6 +1,7 @@
 import { html, useEffect, useRef } from './lib.js';
-import { islands, GROUPS, RARITIES, isWildcard, wildcardElement, byName } from './data.js';
-import { portraitSrc, elementSrc, islandIconSrc, cx, pct } from './util.js';
+import { ISLAND_TREE, RARITIES, isWildcard, wildcardElement, byName, alwaysObtainable } from './data.js';
+import { portraitSrc, elementSrc, cx, pct } from './util.js';
+import { islandIcon } from './art.js';
 import { toasts, dismissToast, openDetail, isAvailable, zapNeedsFor, wubNeedsFor } from './store.js';
 
 const PATHS = {
@@ -36,6 +37,7 @@ const PATHS = {
   sparkle: 'M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z',
   user: 'M20 21a8 8 0 0 0-16 0M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
   fast: 'M13 19l7-7-7-7M5 19l7-7-7-7',
+  retry: 'M3 12a9 9 0 1 0 2.6-6.4L3 8M3 3v5h5',
   egg: 'M12 21c-4 0-7-3-7-7.5S8.5 3 12 3s7 6 7 10.5S16 21 12 21z',
 };
 
@@ -54,7 +56,9 @@ export const ElemIcons = ({ list, size = 16, max = 6 }) => html`
 
 export const Times = ({ t, skin }) => t && html`<span class="times">
   <span class="t-normal" title=${skin ? 'Breeding time (with island skin)' : 'Breeding time'}>${t.time}</span>
-  <span class="t-enh" title="Enhanced breeding time"><${Icon} name="fast" size=${12} />${t.enhanced}</span>
+  ${t.fail
+    ? html`<span class="t-fail" title="Time if it fails"><${Icon} name="retry" size=${12} />${t.fail}</span>`
+    : html`<span class="t-enh" title="Enhanced breeding time"><${Icon} name="fast" size=${12} />${t.enhanced}</span>`}
   ${skin && html`<span class="t-skin" title="Island skin: 10% faster"><${Icon} name="sparkle" size=${12} /></span>`}</span>`;
 
 export const Rarity = ({ r }) => html`<span class=${'rar rar-' + r.toLowerCase()}>${r}</span>`;
@@ -72,12 +76,12 @@ export const MonLink = ({ name, island, children }) => html`
 
 // one zap tag: names the target if there's only one, otherwise the total still needed
 export function StatusTags({ m, island }) {
-  const avail = isAvailable(m.name);
+  const avail = isAvailable(m.name) && !alwaysObtainable(m, island);
   const zaps = zapNeedsFor(m.name);
   const wubs = wubNeedsFor(m.name).filter((w) => !island || w.island === island);
   if (!avail && !zaps.length && !wubs.length) return null;
   const zapTotal = zaps.reduce((n, z) => n + z.still, 0);
-  const zapTitle = ['Needed for zapping:', ...zaps.map((z) => `${z.zap.monster} (${z.zap.island}): ${z.still}`)].join('\n');
+  const zapTitle = ['Needed for zapping:', ...zaps.map((z) => `${z.zap.monster} (${z.zap.island}): ${z.still}${z.via ? ` (as ${z.via})` : ''}`)].join('\n');
   return html`<span class="tags">
     ${avail && html`<span class="tag tag-avail">Available</span>`}
     ${zaps.length > 0 && html`<span class="tag tag-zap" title=${zapTitle}>
@@ -87,7 +91,7 @@ export function StatusTags({ m, island }) {
   </span>`;
 }
 
-export const IslandIcon = ({ name, size = 22 }) => html`<img class="isl-ico" src=${islandIconSrc(name)} alt="" loading="lazy"
+export const IslandIcon = ({ name, size = 22 }) => html`<img class="isl-ico" src=${islandIcon(name)} alt="" loading="lazy"
   style=${{ width: Math.round(size * 4 / 3), height: size }} onError=${(e) => (e.currentTarget.style.visibility = 'hidden')} />`;
 
 export const Progress = ({ value, max, tone }) => {
@@ -124,22 +128,25 @@ export function SearchBox({ value, onInput, placeholder = 'Search…', autofocus
 
 // count(island) returns [done, total], or null to hide that island
 export function IslandPicker({ value, onChange, count }) {
-  const groups = GROUPS.map((g) => [g, islands.filter((i) => i.group === g && count(i.name))]).filter(([, l]) => l.length);
+  const tree = ISLAND_TREE.map((t) => ({ ...t, groups: t.groups
+    .map((g) => ({ ...g, islands: g.islands.filter((i) => count(i.name)) })).filter((g) => g.islands.length) }))
+    .filter((t) => t.groups.length);
   return html`
     <select class="island-select" value=${value} onChange=${(e) => onChange(e.currentTarget.value)} aria-label="Island">
-      ${groups.map(([g, list]) => html`<optgroup label=${g}>${list.map((i) => {
+      ${tree.map((t) => t.groups.map((g) => html`<optgroup label=${(t.name === 'Main Timeline' ? '' : t.name + ' · ') + g.name}>${g.islands.map((i) => {
         const [a, b] = count(i.name);
         return html`<option value=${i.name}>${i.name} (${a}/${b})</option>`;
-      })}</optgroup>`)}
+      })}</optgroup>`))}
     </select>
     <nav class="island-list" aria-label="Islands">
-      ${groups.map(([g, list]) => html`
-        <div class="island-group">${g}</div>
-        ${list.map((i) => {
+      ${tree.map((t) => html`<div class="timeline-head">${t.name}</div>
+        ${t.groups.map((g) => html`
+        <div class="island-group">${g.name}</div>
+        ${g.islands.map((i) => {
           const [a, b] = count(i.name);
           return html`<button class=${cx('island-item', value === i.name && 'on', a >= b && 'complete')} onClick=${() => onChange(i.name)}>
             <span class="isl-name"><${IslandIcon} name=${i.name} />${i.name}</span><span class="count">${a}/${b}</span></button>`;
-        })}`)}
+        })}`)}`)}
     </nav>`;
 }
 

@@ -14,7 +14,7 @@ RARITIES = {"Common", "Rare", "Epic"}
 CLASSES = {"Natural", "Fire", "Magical", "Ethereal", "Mythical", "Seasonal", "Legendary", "Supernatural",
            "Paironormal", "Primordial", "Celestial", "Dipster", "Titansoul"}
 HOWS = {"Breed", "Teleport", "Zap", "Purchase", "Evolve", "Harmonize", "Synthesize", "Fuze", "Dig"}
-ENTRY_KEYS = {"island", "how", "combo", "uses", "time", "enhanced", "cost", "limit", "eggs", "note"}
+ENTRY_KEYS = {"island", "how", "combo", "uses", "time", "enhanced", "fail", "cost", "limit", "eggs", "note"}
 MONSTER_KEYS = {"name", "rarity", "class", "elements", "img", "islands"}
 TIME_RE = re.compile(r"^(\d+d)?( ?\d+h)?( ?\d+m)?( ?\d+s)?$")
 WILDCARD_RE = re.compile(
@@ -29,14 +29,14 @@ def load_js(path, var):
     text = src[start:].strip()
     out, i = [], 0
     # Walk the text: keep strings as-is, drop comments, quote bare keys, drop trailing commas.
-    token = re.compile(r'"(?:[^"\\]|\\.)*"|//[^\n]*|/\*.*?\*/|[A-Za-z_]\w*(?=\s*:)|,(?=\s*[\]}])|.', re.S)
+    token = re.compile(r'"(?:[^"\\]|\\.)*"|//[^\n]*|/\*.*?\*/|(?P<key>[A-Za-z_]\w*)(?=\s*:)|[A-Za-z_]\w*|,(?=\s*[\]}])|.', re.S)
     for m in token.finditer(text):
         t = m.group(0)
         if t.startswith("//") or t.startswith("/*") or t == ",":
             if t == "," and m.end() < len(text) and not re.match(r"\s*[\]}]", text[m.end():]):
                 out.append(t)
             continue
-        if re.match(r"[A-Za-z_]\w*$", t) and t not in ("true", "false", "null"):
+        if m.group("key"):  # bare object key -> quoted, everything else (true/false/null) as-is
             out.append(json.dumps(t))
         else:
             out.append(t)
@@ -131,7 +131,7 @@ def main():
                     errors.append(f"{where}: egg entry {pair!r} should look like [\"Name\", 3]")
                 elif pair[0] not in name_set and not WILDCARD_RE.match(pair[0]):
                     errors.append(f"{where}: egg {pair[0]!r} is not a monster or wildcard")
-            for k in ("time", "enhanced"):
+            for k in ("time", "enhanced", "fail"):
                 if k in e and not (e[k] and TIME_RE.match(e[k])):
                     errors.append(f"{where}: {k} {e[k]!r} should look like \"1d 6h 30m\"")
             if how in ("Breed",) and "time" not in e:
@@ -143,6 +143,14 @@ def main():
         for n in island_names:
             if n.lower() + ".webp" not in icons:
                 warnings.append(f"islands.js: no icon for {n} (images/islands/{n.lower()}.webp)")
+        bgs = set(os.listdir(os.path.join(icon_dir, "bg"))) if os.path.isdir(os.path.join(icon_dir, "bg")) else set()
+        for isl in islands:
+            names = [isl["name"].lower()] + ([f'{isl["name"].lower()} ({isl["skin"].lower()})'] if isl.get("skin") else [])
+            for nm in names:
+                if nm + ".webp" not in bgs:
+                    warnings.append(f"islands.js: no background images/islands/bg/{nm}.webp")
+                if nm != isl["name"].lower() and nm + ".webp" not in icons:
+                    warnings.append(f"islands.js: no skin icon images/islands/{nm}.webp")
 
     for n in island_names:
         if n not in used_islands:

@@ -63,7 +63,7 @@ export function DetailPanel() {
             ${a.until && html` · ${timeLeft(a.until - Date.now()) || 'expired'} left`}
             ${a.cats?.length ? html` · ${a.cats.join(', ')}` : ''}</div>`}
           ${zaps.map((z) => html`<div class="status status-zap"><${Icon} name="zap" size=${16} />
-            ${z.zap.monster} still needs ${z.still}</div>`)}
+            ${z.zap.monster} still needs ${z.still}${z.via ? ` (as ${z.via})` : ''}</div>`)}
           ${wubs.map((w) => html`<div class="status status-wub"><${Icon} name="wubbox" size=${16} />
             ${w.island} · ${w.type} Wubbox</div>`)}
         </section>`}

@@ -1,6 +1,7 @@
 import { html, useState } from '../lib.js';
-import { islands, islandByName, GROUPS, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES, onIsland } from '../data.js';
-import { cx, pct, plural, islandIconSrc } from '../util.js';
+import { islandByName, ISLAND_TREE, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES, onIsland } from '../data.js';
+import { cx, pct, plural } from '../util.js';
+import { islandIcon } from '../art.js';
 import { save, ui, setUi, toast } from '../store.js';
 import { islandCount } from './collection.js';
 import { getIslandImage, setIslandImage, allIslandImages } from '../images.js';
@@ -53,7 +54,7 @@ function IslandDetail({ name, go }) {
   };
   return html`<section class="pane">
     <button class="btn ghost sm back" onClick=${() => setUi('isl', { island: '' })}><${Icon} name="chevron" class="flip" size=${16} />All islands</button>
-    <header class="pane-head"><img class="island-icon-lg" src=${islandIconSrc(name)} alt="" onError=${(e) => (e.currentTarget.style.display = 'none')} /><div class="grow"><h1>${name}</h1>
+    <header class="pane-head"><img class="island-icon-lg" src=${islandIcon(name)} alt="" onError=${(e) => (e.currentTarget.style.display = 'none')} /><div class="grow"><h1>${name}</h1>
       <p class="muted">${info.group} island · ${plural(total, 'monster')}${info.teleportLevel ? ` · ${info.teleportName || 'Teleport'} from level ${info.teleportLevel}` : ''}</p></div>
       <div class="head-actions">
         <button class="btn" onClick=${() => { setUi('col', { island: name }); go('collection'); }}><${Icon} name="collection" size=${16} />Collection</button>
@@ -83,15 +84,15 @@ export function IslandsView({ go }) {
   const images = allIslandImages();
   return html`<section class="pane">
     <header class="pane-head"><div><h1>Islands</h1><p class="muted">Your progress on every island. Open one to add your island plan.</p></div></header>
-    ${GROUPS.map((g) => {
-      const list = islands.filter((i) => i.group === g && onIsland.get(i.name)?.length);
+    ${ISLAND_TREE.map((t) => html`<h2 class="timeline-title">${t.name}</h2>${t.groups.map((grp) => {
+      const list = grp.islands.filter((i) => onIsland.get(i.name)?.length);
       if (!list.length) return null;
-      return html`<div class="section-head"><h2>${g}</h2></div>
+      return html`<div class="section-head"><h2>${grp.name}</h2></div>
         <div class="island-grid">${list.map((i) => {
           const [a, b] = islandCount(i.name);
           const wubs = wubboxSummary(i.name);
           return html`<button class=${cx('island-card', a >= b && 'complete')} key=${i.name} onClick=${() => setUi('isl', { island: i.name })}>
-            <div class="island-thumb"><img src=${islandIconSrc(i.name)} alt="" loading="lazy" onError=${(e) => (e.currentTarget.style.visibility = 'hidden')} />
+            <div class="island-thumb"><img src=${islandIcon(i.name)} alt="" loading="lazy" onError=${(e) => (e.currentTarget.style.visibility = 'hidden')} />
               ${images[i.name] && html`<span class="plan-badge" title="Has an island plan"><${Icon} name="image" size=${12} /></span>`}</div>
             <div class="island-card-body">
               <strong>${i.name}</strong>
@@ -101,6 +102,6 @@ export function IslandsView({ go }) {
             </div>
           </button>`;
         })}</div>`;
-    })}
+    })}`)}
   </section>`;
 }

@@ -1,5 +1,5 @@
 import { html, useState } from '../lib.js';
-import { monsters, classes, elements, islands, RARITIES, HOW, entryFor } from '../data.js';
+import { monsters, classes, elements, islands, RARITIES, HOW, entryFor, alwaysObtainable } from '../data.js';
 import { cx, matches } from '../util.js';
 import { ui, setUi, isOwned, isAvailable, zapNeedsFor, wubNeedsFor, missingIslands, openDetail } from '../store.js';
 import { EntryRow } from '../overlays.js';
@@ -14,7 +14,7 @@ const STATUSES = [
 const PAGE = 80;
 
 function statusOk(m, s, island) {
-  if (s === 'avail') return isAvailable(m.name);
+  if (s === 'avail') return isAvailable(m.name) && !alwaysObtainable(m, island);
   if (s === 'needed') return island ? !isOwned(island, m.name) : missingIslands(m).length > 0;
   if (s === 'zap') return zapNeedsFor(m.name).length > 0;
   if (s === 'wub') return wubNeedsFor(m.name).some((w) => !island || w.island === island);
@@ -24,7 +24,7 @@ function statusOk(m, s, island) {
 function Row({ m, island, open, onToggle }) {
   const entries = island ? m.islands.filter((e) => e.island === island) : m.islands;
   const ownedN = m.islands.filter((e) => isOwned(e.island, m.name)).length;
-  const hows = [...new Set(m.islands.map((e) => e.how))];
+  const hows = [...new Set(entries.map((e) => e.how))];
   const expanded = open || !!island;
   return html`<div class=${cx('db-row', expanded && 'open')}>
     <div class="db-head">

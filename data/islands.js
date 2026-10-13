@@ -1,53 +1,70 @@
 // Islands
-// The order here is the order islands appear in the app.
+// Grouped like the MSM wiki's Islands page. Timelines and groups show in the order they first appear here,
+// and islands show in this order inside each group.
 //
 //   name           must match the island names used in monsters.js
-//   group          sidebar section: "Natural" | "Fire" | "Magical" | "Special" | "Zapping"
-//                  "Other" | "Mirror" | "Islet"
+//   timeline       optional - "Mirror" for mirror timeline islands (default is the main timeline)
+//   group          the section the island is listed under (any name, e.g. "Natural", "Mirror Magical")
 //   elements       optional - the elements that can be bred on this island (used by the Breed Sim)
 //   teleportLevel  optional - player level needed to teleport monsters here
 //   teleportName   optional - what the game calls teleporting here (default "Teleport")
+//   skin           optional - seasonal island skin. Its art is images/islands/<island> (<skin>).webp (icon)
+//                  and images/islands/bg/<island> (<skin>).webp (background), all lowercase
+//   alwaysRares    optional - rare/epic monsters can always be made here (evolve, synthesize),
+//                  so they're never marked "Available" for this island
 
 window.MSM = window.MSM || {};
 
 MSM.islands = [
-  { name: "Plant Island",               group: "Natural", elements: ["Plant", "Cold", "Water", "Earth"] },
-  { name: "Cold Island",                group: "Natural", elements: ["Air", "Plant", "Water", "Cold"] },
-  { name: "Air Island",                 group: "Natural", elements: ["Air", "Earth", "Water", "Cold"] },
-  { name: "Water Island",               group: "Natural", elements: ["Air", "Plant", "Earth", "Water"] },
-  { name: "Earth Island",               group: "Natural", elements: ["Air", "Plant", "Earth", "Cold"] },
-  { name: "Fire Haven",                 group: "Fire",    elements: ["Air", "Plant", "Earth", "Fire"] },
-  { name: "Fire Oasis",                 group: "Fire",    elements: ["Air", "Water", "Cold", "Fire"] },
-  { name: "Light Island",               group: "Magical", elements: ["Plant", "Cold", "Fire", "Light"] },
-  { name: "Psychic Island",             group: "Magical", elements: ["Plant", "Water", "Fire", "Psychic"] },
-  { name: "Faerie Island",              group: "Magical", elements: ["Earth", "Cold", "Fire", "Faerie"] },
-  { name: "Bone Island",                group: "Magical", elements: ["Earth", "Water", "Fire", "Bone"] },
-  { name: "Shugabush Island",           group: "Special", teleportLevel: 15 },
-  { name: "bbli$zard Island",           group: "Special" },
-  { name: "Ethereal Island",            group: "Special", teleportLevel: 15, elements: ["Plasma", "Shadow", "Mech", "Crystal", "Poison"] },
-  { name: "Mythical Island",            group: "Special", teleportLevel: 15 },
-  { name: "Magical Sanctum",            group: "Special", teleportLevel: 15, elements: ["Psychic", "Bone", "Light", "Faerie"] },
-  { name: "Seasonal Shanty",            group: "Special", teleportLevel: 15 },
-  { name: "Amber Island",               group: "Zapping" },
+  // main timeline
+  { name: "Plant Island",               group: "Natural", skin: "Spooktacle", elements: ["Plant", "Cold", "Water", "Earth"] },
+  { name: "Cold Island",                group: "Natural", skin: "Festival of Yay", elements: ["Air", "Plant", "Water", "Cold"] },
+  { name: "Air Island",                 group: "Natural", skin: "Season of Love", elements: ["Air", "Earth", "Water", "Cold"] },
+  { name: "Water Island",               group: "Natural", skin: "Eggs-Travaganza", elements: ["Air", "Plant", "Earth", "Water"] },
+  { name: "Earth Island",               group: "Natural", skin: "SummerSong", elements: ["Air", "Plant", "Earth", "Cold"] },
+
+  { name: "Shugabush Island",           group: "Legendary", teleportLevel: 15 },
+  { name: "bbli$zard Island",           group: "Legendary" },
+
+  { name: "Fire Haven",                 group: "Fire", skin: "Feast-Ember", elements: ["Air", "Plant", "Earth", "Fire"] },
+  { name: "Fire Oasis",                 group: "Fire", skin: "Perplexplore", elements: ["Air", "Water", "Cold", "Fire"] },
+
+  { name: "Light Island",               group: "Magical", skin: "SkyPainting", elements: ["Plant", "Cold", "Fire", "Light"] },
+  { name: "Psychic Island",             group: "Magical", skin: "MindBoggle", elements: ["Plant", "Water", "Fire", "Psychic"] },
+  { name: "Faerie Island",              group: "Magical", skin: "Cloverspell", elements: ["Earth", "Cold", "Fire", "Faerie"] },
+  { name: "Bone Island",                group: "Magical", skin: "Beat Hereafter", elements: ["Earth", "Water", "Fire", "Bone"] },
+
+  { name: "Ethereal Island",            group: "Teleporting/Transposing", skin: "Life-Formula", teleportLevel: 15, elements: ["Plasma", "Shadow", "Mech", "Crystal", "Poison"] },
+  { name: "Mythical Island",            group: "Teleporting/Transposing", teleportLevel: 15 },
+  { name: "Magical Sanctum",            group: "Teleporting/Transposing", skin: "Crescendo Moon", teleportLevel: 15, elements: ["Psychic", "Bone", "Light", "Faerie"] },
+  { name: "Magical Nexus",              group: "Teleporting/Transposing", teleportLevel: 18, teleportName: "Transpose" },
+  { name: "Major Paironormal Carnival", group: "Teleporting/Transposing", teleportLevel: 18, elements: ["Control", "Hoax", "Ruin", "Depths"] },
+  { name: "Seasonal Shanty",            group: "Teleporting/Transposing", teleportLevel: 15 },
+
+  { name: "Amber Island",               group: "Zapping", skin: "Echoes of Eco", alwaysRares: true },
   { name: "Wublin Island",              group: "Zapping" },
   { name: "Celestial Island",           group: "Zapping" },
+
   { name: "Colossingum",                group: "Other", teleportLevel: 5 },
-  { name: "Gold Island",                group: "Other", teleportLevel: 15 },
-  { name: "Ethereal Workshop",          group: "Other" },
-  { name: "Magical Nexus",              group: "Other", teleportLevel: 18, teleportName: "Transpose" },
-  { name: "Major Paironormal Carnival", group: "Special", teleportLevel: 18, elements: ["Control", "Hoax", "Ruin", "Depths"] },
-  { name: "Mirror Plant Island",        group: "Mirror",  elements: ["Plant", "Cold", "Water", "Earth"] },
-  { name: "Mirror Cold Island",         group: "Mirror",  elements: ["Air", "Plant", "Water", "Cold"] },
-  { name: "Mirror Air Island",          group: "Mirror",  elements: ["Air", "Earth", "Water", "Cold"] },
-  { name: "Mirror Water Island",        group: "Mirror",  elements: ["Air", "Plant", "Earth", "Water"] },
-  { name: "Mirror Earth Island",        group: "Mirror",  elements: ["Air", "Plant", "Earth", "Cold"] },
-  { name: "Mirror Light Island",        group: "Mirror",  elements: ["Plant", "Cold", "Fire", "Light"] },
-  { name: "Mirror Psychic Island",      group: "Mirror",  elements: ["Plant", "Water", "Fire", "Psychic"] },
-  { name: "Mirror Faerie Island",       group: "Mirror",  elements: ["Earth", "Cold", "Fire", "Faerie"] },
-  { name: "Mirror Bone Island",         group: "Mirror",  elements: ["Earth", "Water", "Fire", "Bone"] },
-  { name: "Minor Paironormal Carnival", group: "Special" },
-  { name: "Plasma Islet",               group: "Islet" },
-  { name: "Mech Islet",                 group: "Islet" },
-  { name: "Shadow Islet",               group: "Islet" },
-  { name: "Crystal Islet",              group: "Islet" },
+  { name: "Gold Island",                group: "Other", skin: "Anniversary Month", teleportLevel: 15 },
+  { name: "Ethereal Workshop",          group: "Other", alwaysRares: true },
+
+  // mirror timeline
+  { name: "Mirror Plant Island",        timeline: "Mirror", group: "Mirror Natural", elements: ["Plant", "Cold", "Water", "Earth"] },
+  { name: "Mirror Cold Island",         timeline: "Mirror", group: "Mirror Natural", elements: ["Air", "Plant", "Water", "Cold"] },
+  { name: "Mirror Air Island",          timeline: "Mirror", group: "Mirror Natural", elements: ["Air", "Earth", "Water", "Cold"] },
+  { name: "Mirror Water Island",        timeline: "Mirror", group: "Mirror Natural", elements: ["Air", "Plant", "Earth", "Water"] },
+  { name: "Mirror Earth Island",        timeline: "Mirror", group: "Mirror Natural", elements: ["Air", "Plant", "Earth", "Cold"] },
+
+  { name: "Plasma Islet",               timeline: "Mirror", group: "Ethereal Islet" },
+  { name: "Mech Islet",                 timeline: "Mirror", group: "Ethereal Islet" },
+  { name: "Shadow Islet",               timeline: "Mirror", group: "Ethereal Islet" },
+  { name: "Crystal Islet",              timeline: "Mirror", group: "Ethereal Islet" },
+
+  { name: "Mirror Light Island",        timeline: "Mirror", group: "Mirror Magical", elements: ["Plant", "Cold", "Fire", "Light"] },
+  { name: "Mirror Psychic Island",      timeline: "Mirror", group: "Mirror Magical", elements: ["Plant", "Water", "Fire", "Psychic"] },
+  { name: "Mirror Faerie Island",       timeline: "Mirror", group: "Mirror Magical", elements: ["Earth", "Cold", "Fire", "Faerie"] },
+  { name: "Mirror Bone Island",         timeline: "Mirror", group: "Mirror Magical", elements: ["Earth", "Water", "Fire", "Bone"] },
+
+  { name: "Minor Paironormal Carnival", timeline: "Mirror", group: "Transposing" },
 ];

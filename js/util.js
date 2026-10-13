@@ -28,6 +28,8 @@ export function enhancedSecs(entry) {
 export function entryTimes(entry, skin = false) {
   if (!entry || !entry.time) return null;
   const base = parseTime(entry.time);
+  // synthesize / fuze / evolve have a failure time instead of an enhanced one
+  if (entry.fail) return { time: formatTime(skin ? base * 0.9 : base), fail: entry.fail };
   const enh = enhancedSecs(entry);
   if (!skin) return { time: formatTime(base), enhanced: formatTime(enh) };
   return { time: formatTime(base * 0.9), enhanced: formatTime(Math.max(0, enh - base * 0.1)) };
@@ -82,7 +84,6 @@ export function portraitFile(m, island) {
 
 export const portraitSrc = (m, island) => encodeURI(PORTRAITS + portraitFile(m, island)).replace(/\$/g, '%24');
 export const elementSrc = (el) => encodeURI('images/elements/' + el.toLowerCase() + '.png');
-export const islandIconSrc = (name) => encodeURI('images/islands/' + name.toLowerCase() + '.webp').replace(/\$/g, '%24');
 
 export const plural = (n, word, many = word + 's') => `${n} ${n === 1 ? word : many}`;
 export const cx = (...parts) => parts.filter(Boolean).join(' ');

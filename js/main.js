@@ -14,6 +14,8 @@ import { IslandsView } from './views/islands.js';
 import { SettingsView } from './views/settings.js';
 import { cx } from './util.js';
 import { loadImages } from './images.js';
+import { islandBg } from './art.js';
+import { wubbox } from './data.js';
 
 const VIEWS = {
   collection: { label: 'Collection', icon: 'collection', View: CollectionView },
@@ -24,6 +26,10 @@ const VIEWS = {
   wubbox: { label: 'Wubbox', icon: 'wubbox', View: WubboxView },
   islands: { label: 'Islands', icon: 'islands', View: IslandsView },
   settings: { label: 'Settings', icon: 'settings', View: SettingsView },
+};
+const TAB_BG = {
+  breed: 'Gold Island', available: 'Seasonal Shanty', database: 'Colossingum', zapping: 'Wublin Island',
+  wubbox: 'Plant Island', islands: 'Magical Sanctum', settings: 'Gold Island',
 };
 const MAIN_NAV = ['collection', 'breed', 'available', 'database', 'zapping', 'wubbox', 'islands'];
 const PHONE_NAV = ['collection', 'breed', 'zapping', 'available'];
@@ -86,6 +92,12 @@ function App() {
   const [more, setMore] = useState(false);
   const view = VIEWS[ui.view] ? ui.view : 'collection';
   const { View } = VIEWS[view];
+  // darkened island art behind every page: the island you're looking at, otherwise one per tab
+  const bgIsland = view === 'collection' ? ui.col.island
+    : view === 'wubbox' && wubbox[ui.wub.island] ? ui.wub.island
+    : view === 'islands' && ui.isl.island ? ui.isl.island
+    : TAB_BG[view];
+  const bg = bgIsland ? islandBg(bgIsland) : null;
 
   useEffect(() => {
     const onHash = () => { const v = viewFromHash(); if (v && v !== ui.view) setUi({ view: v }); };
@@ -122,6 +134,7 @@ function App() {
       <button class="icon-btn" aria-label="Search" onClick=${() => setSearching(true)}><${Icon} name="search" /></button>
     </header>
 
+    ${bg && html`<div class="page-bg" key=${bg} style=${{ backgroundImage: `url("${bg}")` }}></div>`}
     <main id="main" class=${'view-' + view}><${View} go=${go} /></main>
 
     <nav class="tabbar" aria-label="Sections">

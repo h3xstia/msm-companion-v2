@@ -1,5 +1,5 @@
 import { useEffect, useState } from './lib.js';
-import { byName, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES } from './data.js';
+import { byName, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES, isWildcard, matchesFor } from './data.js';
 
 const SAVE_KEY = 'msm2:save';
 const UI_KEY = 'msm2:ui';
@@ -164,14 +164,17 @@ export function zapEggs(z) {
 let derived = null;
 function getDerived() {
   if (derived) return derived;
-  // egg name -> trackers that still need it
+  // monster -> trackers that still need it. wildcard eggs ("Any Rare Earth Double") count for every monster that fits
   const zapNeeds = new Map();
   for (const z of save.zaps) {
     for (const [egg, n] of zapEggs(z)) {
       const still = n - (z.sent[egg] || 0) - (z.bred[egg] || 0);
       if (still <= 0) continue;
-      if (!zapNeeds.has(egg)) zapNeeds.set(egg, []);
-      zapNeeds.get(egg).push({ zap: z, still });
+      const via = isWildcard(egg) ? egg : null;
+      for (const m of matchesFor(egg)) {
+        if (!zapNeeds.has(m.name)) zapNeeds.set(m.name, []);
+        zapNeeds.get(m.name).push({ zap: z, still, via });
+      }
     }
   }
   // only counts wubboxes that have been started

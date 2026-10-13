@@ -223,8 +223,11 @@ main { margin-left: var(--sidebar); min-height: 100vh; }
   border-right: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 55%, var(--bg));
   scrollbar-width: thin;
 }
-.island-group { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); padding: 14px 10px 6px; }
-.island-group:first-child { padding-top: 2px; }
+.timeline-head { font-size: 13px; font-weight: 700; color: var(--text); padding: 18px 10px 2px; margin-top: 6px; border-top: 1px solid var(--border); }
+.timeline-head:first-child { padding-top: 0; margin-top: 0; border-top: 0; }
+.island-group { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-3); padding: 12px 10px 6px; }
+.timeline-title { font-size: 19px; margin: 34px 0 -10px; padding-top: 18px; border-top: 1px solid var(--border); }
+.timeline-title:first-of-type { margin-top: 8px; padding-top: 0; border-top: 0; }
 .island-item {
   display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; height: 34px; padding: 0 10px;
   border: 0; border-radius: 8px; background: none; color: var(--text-2); text-align: left; font-size: 13.5px;
@@ -310,6 +313,7 @@ main { margin-left: var(--sidebar); min-height: 100vh; }
 .times { display: inline-flex; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .t-normal { color: var(--text); }
 .t-enh { display: inline-flex; align-items: center; gap: 3px; color: var(--accent-text); }
+.t-fail { display: inline-flex; align-items: center; gap: 3px; color: var(--danger); }
 .t-skin { display: inline-flex; color: var(--epic); }
 .mon-card-info { position: absolute; top: 6px; right: 6px; z-index: 2; color: var(--text-3); }
 
@@ -637,6 +641,14 @@ details.info .btn { justify-self: start; }
 .settings-grid .card { margin: 0; }
 .settings-grid details.info { grid-column: 1 / -1; }
 @media (max-width: 900px) { .settings-grid { grid-template-columns: 1fr; } }
+
+/* island background art (darkened so the page stays readable) */
+.page-bg { position: fixed; inset: 0; z-index: -1; background: center / cover no-repeat; animation: bg-in 0.5s ease; }
+.page-bg::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 66%, transparent), color-mix(in srgb, var(--bg) 88%, transparent)); }
+@keyframes bg-in { from { opacity: 0; } }
+body:has(.page-bg) { background: var(--bg); }
+.island-list { backdrop-filter: blur(6px); }
 
 /* let cards shrink on phones */
 .mon-card, .result-card, .avail-card, .island-card, .egg, .stat, .zap-card, .db-row, .entry { min-width: 0; }

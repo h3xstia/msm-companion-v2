@@ -8,7 +8,16 @@ export const byName = new Map(monsters.map((m) => [m.name, m]));
 export const islandByName = new Map(islands.map((i) => [i.name, i]));
 
 export const RARITIES = ['Common', 'Rare', 'Epic'];
-export const GROUPS = ['Natural', 'Fire', 'Magical', 'Special', 'Zapping', 'Other', 'Mirror', 'Islet'];
+// timeline -> groups -> islands, in islands.js order
+export const ISLAND_TREE = [];
+for (const i of islands) {
+  const tl = (i.timeline || 'Main') + ' Timeline';
+  let t = ISLAND_TREE.find((x) => x.name === tl);
+  if (!t) ISLAND_TREE.push(t = { name: tl, groups: [] });
+  let g = t.groups.find((x) => x.name === i.group);
+  if (!g) t.groups.push(g = { name: i.group, islands: [] });
+  g.islands.push(i);
+}
 export const ZAP_ISLANDS = ['Wublin Island', 'Amber Island', 'Celestial Island'];
 export const WUBBOX_TYPES = ['common', 'rare', 'epic'];
 
@@ -22,6 +31,9 @@ export const classes = [...new Set(monsters.map((m) => m.class))].sort();
 export const elements = [...new Set(monsters.flatMap((m) => m.elements))].sort();
 
 export const entryFor = (m, island) => m.islands.find((e) => e.island === island);
+
+// rare/epic monsters that can always be made on this island (amber, workshop) aren't "available" news there
+export const alwaysObtainable = (m, island) => !!island && !!islandByName.get(island)?.alwaysRares && m.rarity !== 'Common';
 
 export const HOW = {
   Breed: { label: 'Breed', tone: 'breed' },
@@ -86,6 +98,15 @@ export function satisfies(token, m) {
     return m.elements.includes(sized[2]);
   }
   return false;
+}
+
+// monsters that fit an egg/combo token: itself if it's a name, every match if it's a wildcard
+const matchCache = new Map();
+export function matchesFor(token) {
+  if (!matchCache.has(token)) {
+    matchCache.set(token, isWildcard(token) ? monsters.filter((m) => satisfies(token, m)) : [byName.get(token)].filter(Boolean));
+  }
+  return matchCache.get(token);
 }
 
 export function wubboxList(island, type) {
