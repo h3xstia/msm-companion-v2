@@ -92,7 +92,11 @@ export function BreedView() {
       <${ParentPicker} slot="p2" label="Parent 2" other=${p1} />
     </div>
     ${!p1 || !p2
-      ? html`<${Empty} icon="egg" title="Choose two parents">Results show every monster the pair can breed, and on which islands.<//>`
+      ? html`<${Empty} title="Choose two parents" art=${html`<div class="breed-art" aria-hidden="true">
+          <span class=${cx('slot', p1 && 'filled')}>${p1 ? html`<${MonImg} m=${p1} size=${52} />` : '?'}</span><span class="op">+</span>
+          <span class=${cx('slot', p2 && 'filled')}>${p2 ? html`<${MonImg} m=${p2} size=${52} />` : '?'}</span><span class="op">=</span>
+          <span class="slot egg"><${Icon} name="egg" size=${28} /></span></div>`}>
+          Pick a monster in each box above to see everything they can breed, and on which islands.<//>`
       : !offspring.length
         ? html`<${Empty} icon="egg" title="No offspring">These two can't breed anything together.<//>`
         : html`

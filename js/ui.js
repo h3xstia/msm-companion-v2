@@ -101,8 +101,10 @@ export const Progress = ({ value, max, tone }) => {
     <span style=${{ width: p + '%' }}></span></div>`;
 };
 
-export const Empty = ({ icon = 'sparkle', title, children }) => html`
-  <div class="empty"><${Icon} name=${icon} size=${28} /><strong>${title}</strong>${children && html`<p>${children}</p>`}</div>`;
+// art replaces the default icon bubble
+export const Empty = ({ icon = 'sparkle', title, children, art }) => html`
+  <div class="empty">${art || html`<span class="empty-icon"><${Icon} name=${icon} size=${26} /></span>`}
+    <strong>${title}</strong>${children && html`<p>${children}</p>`}</div>`;
 
 export const Chip = ({ on, onClick, children, tone }) => html`
   <button class=${cx('chip', on && 'on', tone)} aria-pressed=${!!on} onClick=${onClick}>${children}</button>`;

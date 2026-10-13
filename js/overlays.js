@@ -1,29 +1,30 @@
 import { html, useEffect, useMemo, useRef, useState } from './lib.js';
-import { byName, monsters, islands, howLabel, HOW, entryDetails } from './data.js';
+import { byName, monsters, islands, howLabel, HOW, entryDetails, isWildcard } from './data.js';
 import { entryTimes, timeLeft, urgency, cx, matches } from './util.js';
 import {
   save, detail, openDetail, closeDetail, isOwned, setOwned, isAvailable, zapNeedsFor, wubNeedsFor, setUi,
 } from './store.js';
 import { skinOn } from './art.js';
-import { Icon, MonImg, ElemIcons, Rarity, TokenImg, MonLink, Dialog, Times, IslandIcon } from './ui.js';
+import { Icon, MonImg, ElemIcons, Rarity, TokenImg, Dialog, Times, IslandIcon } from './ui.js';
 
 export function EntryRow({ m, e, toggle = true }) {
   const t = entryTimes(e, skinOn(e.island));
   const owned = isOwned(e.island, m.name);
   const details = entryDetails(m, e);
   return html`<div class=${cx('entry', owned && 'owned')}>
-    <div class="entry-main">
-      <div class="entry-island"><${IslandIcon} name=${e.island} size=${24} />${e.island}</div>
-      <div class="entry-how">
-        <span class=${'how how-' + (HOW[e.how]?.tone || 'other')}>${howLabel(e)}</span>
-        ${e.combo && html`<span class="combo">${e.combo.map((p, i) => html`${i ? ' + ' : ''}${byName.has(p) ? html`<${MonLink} name=${p} island=${e.island} />` : p}`)}</span>`}
-        ${details.map((d) => html`<span class="detail">${d}</span>`)}
-      </div>
-      ${e.eggs && html`<div class="egg-list">${e.eggs.map(([egg, n]) => html`
-        <span class="egg-pill" title=${egg}><${TokenImg} token=${egg} island=${e.island} size=${20} />${egg} ×${n}</span>`)}
-        ${e.limit && html`<span class="detail">Time limit: ${e.limit}</span>`}</div>`}
+    <div class="entry-island"><${IslandIcon} name=${e.island} size=${30} /><span>${e.island}</span></div>
+    <div class="entry-how"><span class=${'how how-' + (HOW[e.how]?.tone || 'other')}>${howLabel(e)}</span></div>
+    <div class="entry-detail">
+      ${e.combo && html`<span class="combo">${e.combo.map((p, i) => html`${i ? html`<span class="plus">+</span>` : ''}${byName.has(p)
+        ? html`<button class="parent-pic" title=${p} aria-label=${p} onClick=${(ev) => { ev.stopPropagation(); openDetail(p, e.island); }}>
+            <${MonImg} m=${byName.get(p)} island=${e.island} size=${36} /></button>`
+        : html`<span class="wild-chip" title=${p}><${TokenImg} token=${p} size=${20} />${p.replace(/^Any /, '')}</span>`}`)}</span>`}
+      ${details.map((d) => html`<span class="detail">${d}</span>`)}
+      ${e.eggs && html`<span class="egg-list">${e.eggs.map(([egg, n]) => html`
+        <span class="egg-pill" title=${egg}><${TokenImg} token=${egg} island=${e.island} size=${22} />${isWildcard(egg) ? egg.replace(/^Any /, '') + ' ' : ''}×${n}</span>`)}</span>`}
+      ${e.limit && html`<span class="detail">Time limit: ${e.limit}</span>`}
     </div>
-    ${t && html`<div class="entry-time"><${Times} t=${t} skin=${skinOn(e.island)} /></div>`}
+    <div class="entry-time">${t && html`<${Times} t=${t} skin=${skinOn(e.island)} />`}</div>
     ${toggle && html`<label class="owned-toggle" title=${owned ? 'Owned' : 'Mark owned'}>
       <input type="checkbox" checked=${owned} onChange=${(ev) => setOwned(e.island, m.name, ev.currentTarget.checked)} />
       <span><${Icon} name="check" size=${14} /></span></label>`}
