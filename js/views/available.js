@@ -24,7 +24,7 @@ function AvailCard({ name, go }) {
       const how = e.combo ? e.combo.join(' + ') : [howLabel(e), ...entryDetails(m, e)].join(' · ');
       return html`<button class="isl-btn" key=${e.island} title=${`${e.island}
 ${how}`} aria-label=${`${e.island}: ${how}. Open in Collection`}
-        onClick=${() => { setUi('col', { island: e.island }); go('collection'); }}><${IslandIcon} name=${e.island} size=${30} /></button>`;
+        onClick=${() => { setUi('col', { island: e.island }); go('collection'); }}><${IslandIcon} name=${e.island} /></button>`;
     })}</div>
   </div>`;
 }

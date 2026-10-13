@@ -5,7 +5,7 @@ import {
   save, detail, openDetail, closeDetail, isOwned, setOwned, isAvailable, zapNeedsFor, wubNeedsFor, setUi,
 } from './store.js';
 import { skinOn } from './art.js';
-import { Icon, MonImg, ElemIcons, Rarity, TokenImg, MonLink, Dialog, Times } from './ui.js';
+import { Icon, MonImg, ElemIcons, Rarity, TokenImg, MonLink, Dialog, Times, IslandIcon } from './ui.js';
 
 export function EntryRow({ m, e, toggle = true }) {
   const t = entryTimes(e, skinOn(e.island));
@@ -13,7 +13,7 @@ export function EntryRow({ m, e, toggle = true }) {
   const details = entryDetails(m, e);
   return html`<div class=${cx('entry', owned && 'owned')}>
     <div class="entry-main">
-      <div class="entry-island">${e.island}</div>
+      <div class="entry-island"><${IslandIcon} name=${e.island} size=${24} />${e.island}</div>
       <div class="entry-how">
         <span class=${'how how-' + (HOW[e.how]?.tone || 'other')}>${howLabel(e)}</span>
         ${e.combo && html`<span class="combo">${e.combo.map((p, i) => html`${i ? ' + ' : ''}${byName.has(p) ? html`<${MonLink} name=${p} island=${e.island} />` : p}`)}</span>`}

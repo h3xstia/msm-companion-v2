@@ -91,8 +91,9 @@ export function StatusTags({ m, island }) {
   </span>`;
 }
 
-export const IslandIcon = ({ name, size = 22 }) => html`<img class="isl-ico" src=${islandIcon(name)} alt="" loading="lazy"
-  style=${{ width: Math.round(size * 4 / 3), height: size }} onError=${(e) => (e.currentTarget.style.visibility = 'hidden')} />`;
+// size = height in px; leave it out to size the icon with css instead
+export const IslandIcon = ({ name, size }) => html`<img class="isl-ico" src=${islandIcon(name)} alt="" loading="lazy"
+  style=${size ? { width: Math.round(size * 4 / 3), height: size } : undefined} onError=${(e) => (e.currentTarget.style.visibility = 'hidden')} />`;
 
 export const Progress = ({ value, max, tone }) => {
   const p = Math.min(100, pct(value, max));
@@ -145,7 +146,7 @@ export function IslandPicker({ value, onChange, count }) {
         ${g.islands.map((i) => {
           const [a, b] = count(i.name);
           return html`<button class=${cx('island-item', value === i.name && 'on', a >= b && 'complete')} onClick=${() => onChange(i.name)}>
-            <span class="isl-name"><${IslandIcon} name=${i.name} />${i.name}</span><span class="count">${a}/${b}</span></button>`;
+            <span class="isl-name"><${IslandIcon} name=${i.name} size=${22} />${i.name}</span><span class="count">${a}/${b}</span></button>`;
         })}`)}`)}
     </nav>`;
 }

@@ -342,7 +342,7 @@ main { margin-left: var(--sidebar); min-height: 100vh; }
   padding: 10px 12px; border-radius: 11px; background: var(--surface-2); border: 1px solid transparent;
 }
 .entry.owned { border-color: color-mix(in srgb, var(--owned) 35%, transparent); }
-.entry-island { font-weight: 600; font-size: 13.5px; }
+.entry-island { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13.5px; }
 .entry-how { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 4px; font-size: 12.5px; color: var(--text-2); }
 .entry-how .detail { color: var(--text-2); }
 .entry-how .detail + .detail::before, .combo + .detail::before { content: "· "; color: var(--text-3); }
@@ -449,6 +449,8 @@ main { margin-left: var(--sidebar); min-height: 100vh; }
 .avail-islands { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 10px 10px; border-top: 1px solid var(--border); flex: 1; align-content: flex-start; }
 .isl-btn { border: 0; background: var(--surface-2); border-radius: 9px; padding: 3px 4px; display: grid; place-items: center; transition: background 0.15s, transform 0.1s; }
 .isl-btn:hover { background: var(--surface-3); transform: translateY(-1px); }
+.avail-islands .isl-ico { width: clamp(40px, 3.6vw, 64px); height: auto; aspect-ratio: 4 / 3; }
+.avail-islands { gap: 6px; }
 .deadline { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 7px; font-size: 12px; font-weight: 650; white-space: nowrap; }
 .dl-none { color: var(--text-3); background: var(--surface-2); }
 .dl-ok { color: var(--owned); background: var(--owned-soft); }
@@ -645,7 +647,7 @@ details.info .btn { justify-self: start; }
 /* island background art (darkened so the page stays readable) */
 .page-bg { position: fixed; inset: 0; z-index: -1; background: center / cover no-repeat; animation: bg-in 0.5s ease; }
 .page-bg::after { content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 66%, transparent), color-mix(in srgb, var(--bg) 88%, transparent)); }
+  background: linear-gradient(180deg, color-mix(in srgb, var(--bg) 74%, transparent), color-mix(in srgb, var(--bg) 90%, transparent)); }
 @keyframes bg-in { from { opacity: 0; } }
 body:has(.page-bg) { background: var(--bg); }
 .island-list { backdrop-filter: blur(6px); }
