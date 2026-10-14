@@ -34,7 +34,7 @@ export const entryFor = (m, island) => m.islands.find((e) => e.island === island
 export const zapEntry = (m) => m.islands.find((e) => e.how === 'Zap');
 
 // rare/epic monsters that can always be made on this island (amber, workshop) aren't "available" news there
-export const alwaysObtainable = (m, island) => !!island && !!islandByName.get(island)?.alwaysRares && m.rarity !== 'Common';
+export const alwaysObtainable = (m, island) => !!island && !!islandByName.get(island)?.alwaysRarities?.includes(m.rarity);
 
 export const HOW = {
   Breed: { label: 'Breed', tone: 'breed' },

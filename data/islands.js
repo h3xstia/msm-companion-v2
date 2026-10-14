@@ -12,8 +12,8 @@
 //                  and images/islands/bg/<island> (<skin>).webp (background), all lowercase
 //   vesselsMonthly optional - vessels here rotate monthly, so an available vessel ends at the end of the month
 //   hideInAvailable optional - don't show this island on the Available tab's island icons
-//   alwaysRares    optional - rare/epic monsters can always be made here (evolve, synthesize),
-//                  so they're never marked "Available" for this island
+//   alwaysRarities optional - rarities that can always be got here (evolve, synthesize, teleport),
+//                  so they're never marked "Available" for this island and are left off the Available tab
 
 window.MSM = window.MSM || {};
 
@@ -37,19 +37,19 @@ MSM.islands = [
   { name: "Bone Island",                group: "Magical", skin: "Beat Hereafter", elements: ["Earth", "Water", "Fire", "Bone"] },
 
   { name: "Ethereal Island",            group: "Teleporting/Transposing", skin: "Life-Formula", teleportLevel: 15, elements: ["Plasma", "Shadow", "Mech", "Crystal", "Poison"] },
-  { name: "Mythical Island",            group: "Teleporting/Transposing", teleportLevel: 15 },
+  { name: "Mythical Island",            group: "Teleporting/Transposing", teleportLevel: 15, alwaysRarities: ["Common"] },
   { name: "Magical Sanctum",            group: "Teleporting/Transposing", skin: "Crescendo Moon", teleportLevel: 15, elements: ["Psychic", "Bone", "Light", "Faerie"] },
   { name: "Magical Nexus",              group: "Teleporting/Transposing", teleportLevel: 18, teleportName: "Transpose", hideInAvailable: true },
   { name: "Major Paironormal Carnival", group: "Teleporting/Transposing", teleportLevel: 18, elements: ["Control", "Hoax", "Ruin", "Depths"] },
-  { name: "Seasonal Shanty",            group: "Teleporting/Transposing", teleportLevel: 15 },
+  { name: "Seasonal Shanty",            group: "Teleporting/Transposing", teleportLevel: 15, alwaysRarities: ["Common"] },
 
-  { name: "Amber Island",               group: "Zapping", skin: "Echoes of Eco", alwaysRares: true, vesselsMonthly: true },
+  { name: "Amber Island",               group: "Zapping", skin: "Echoes of Eco", alwaysRarities: ["Rare", "Epic"], vesselsMonthly: true },
   { name: "Wublin Island",              group: "Zapping" },
   { name: "Celestial Island",           group: "Zapping" },
 
   { name: "Colossingum",                group: "Other", teleportLevel: 5 },
   { name: "Gold Island",                group: "Other", skin: "Anniversary Month", teleportLevel: 15, hideInAvailable: true },
-  { name: "Ethereal Workshop",          group: "Other", alwaysRares: true },
+  { name: "Ethereal Workshop",          group: "Other", alwaysRarities: ["Rare", "Epic"] },
 
   // mirror timeline
   { name: "Mirror Plant Island",        timeline: "Mirror", group: "Mirror Natural", elements: ["Plant", "Cold", "Water", "Earth"] },

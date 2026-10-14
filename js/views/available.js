@@ -34,7 +34,9 @@ function AvailCard({ name, go }) {
         <div class="meta"><${Rarity} r=${m.rarity} /><${Reason} m=${m} a=${a} /></div>
       </div>
     </button>
-    <div class="avail-islands">${m.islands.filter((e) => !islandByName.get(e.island)?.hideInAvailable && !alwaysObtainable(m, e.island)).map((e) => {
+    <div class="avail-islands">${m.islands.filter((e) => a.kind === 'vessel'
+        ? e.how === 'Zap' // a vessel is only news for the island you zap it on
+        : !islandByName.get(e.island)?.hideInAvailable && !alwaysObtainable(m, e.island)).map((e) => {
       const how = e.combo ? e.combo.join(' + ') : [howLabel(e), ...entryDetails(m, e)].join(' · ');
       return html`<button class="isl-btn" key=${e.island} title=${`${e.island}
 ${how}`} aria-label=${`${e.island}: ${how}. Open in Collection`}
