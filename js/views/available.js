@@ -1,5 +1,6 @@
 import { html, useEffect, useState } from '../lib.js';
-import { byName, howLabel, entryDetails, islandByName, alwaysObtainable } from '../data.js';
+import { byName, howLabel, entryDetails, islandByName, alwaysObtainable, zapEntry } from '../data.js';
+import { suggestDeadline } from '../util.js';
 import { cx, plural, relTime } from '../util.js';
 import { save, commit, isAvailable, openDetail, purgeExpired, toast, setUi } from '../store.js';
 import { syncFromWiki, wikiStale, WIKI_PAGE } from '../wiki.js';
@@ -7,6 +8,19 @@ import { Deadline } from '../overlays.js';
 import { Icon, MonImg, Rarity, Empty, IslandIcon } from '../ui.js';
 
 let autoTried = false;
+
+// why it's on the list when it isn't plain breeding: a vessel to zap, or a starshop buy
+function Reason({ m, a }) {
+  const kind = a.kind || (a.chipless ? (a.cats || []).some((c) => /vessel/i.test(c)) ? 'vessel' : 'starshop' : null);
+  if (kind === 'vessel') {
+    const isl = zapEntry(m)?.island;
+    const monthly = isl && islandByName.get(isl)?.vesselsMonthly;
+    return html`<span class="reason reason-vessel" title=${isl ? `Vessel to zap on ${isl}` : 'Vessel'}>Vessel${isl ? ' · ' + isl.replace(' Island', '') : ''}</span>
+      ${monthly && html`<${Deadline} until=${suggestDeadline('End of Month')} />`}`;
+  }
+  if (kind === 'starshop') return html`<span class="reason reason-starshop" title="Buy it in the Starshop">Starshop</span>`;
+  return a.until ? html`<${Deadline} until=${a.until} />` : null;
+}
 
 function AvailCard({ name, go }) {
   const m = byName.get(name);
@@ -17,7 +31,7 @@ function AvailCard({ name, go }) {
       <${MonImg} m=${m} size=${52} />
       <div class="avail-info">
         <strong>${m.name}</strong>
-        <div class="meta"><${Rarity} r=${m.rarity} />${a.until ? html`<${Deadline} until=${a.until} />` : a.chipless ? html`<span class="muted small">Starshop / vessel</span>` : ''}</div>
+        <div class="meta"><${Rarity} r=${m.rarity} /><${Reason} m=${m} a=${a} /></div>
       </div>
     </button>
     <div class="avail-islands">${m.islands.filter((e) => !islandByName.get(e.island)?.hideInAvailable && !alwaysObtainable(m, e.island)).map((e) => {

@@ -48,7 +48,8 @@ function TrackDialog({ open, onClose }) {
       <${Segmented} value=${island} options=${ZAP_ISLANDS.map((i) => [i, i.replace(' Island', '')])} onChange=${(v) => { setIsland(v); setQ(''); }} />
       <${SearchBox} value=${q} onInput=${setQ} autofocus />
       <div class="pick-list">${list.map(({ m, e }) => html`<button class="pick-row" key=${m.name} onClick=${() => choose(m, e)}>
-        <${MonImg} m=${m} island=${island} size=${36} /><span class="grow">${m.name}${isOwned(island, m.name) ? html` <span class="muted small">· owned</span>` : ''}</span>
+        <${MonImg} m=${m} island=${island} size=${36} /><span class="grow">${m.name}${isOwned(island, m.name) ? html` <span class="muted small">· owned</span>` : ''}
+          ${save.avail[m.name]?.kind === 'vessel' && html` <span class="reason reason-vessel">Vessel available</span>`}</span>
         <span class="muted small">${e.limit || 'No time limit'} · ${plural(e.eggs.reduce((n, [, c]) => n + c, 0), 'egg')}</span></button>`)}
         ${!list.length && html`<p class="muted pad">No zap targets found.</p>`}</div>`
     : html`

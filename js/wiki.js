@@ -21,6 +21,8 @@ function parsePage(html) {
         if (inTarget && cats.length) break;
         const t = head.textContent.toLowerCase();
         inTarget = t.includes('current') && t.includes('sale');
+      } else if (/other sales/i.test(head.textContent)) {
+        inTarget = false; // discounts and decorations, not monster availability
       }
       continue;
     }
@@ -91,14 +93,16 @@ export function syncFromWiki() {
       const timers = {}; // keep any end dates the user set on wiki entries
       for (const k of Object.keys(s.avail)) if (s.avail[k].wiki) { timers[k] = s.avail[k].until; delete s.avail[k]; }
       for (const cat of cats) {
-        const chipless = /starshop|vessel/i.test(cat.name);
+        // vessel / starshop sections: obtainable, but not by breeding
+        const kind = /vessel/i.test(cat.name) ? 'vessel' : /starshop/i.test(cat.name) ? 'starshop' : null;
+        const chipless = !!kind;
         for (const name of cat.portraits) {
           const m = findMonster(name);
           if (!m) { if (!unknown.includes(name)) unknown.push(name); continue; }
           if (s.avail[m.name] && !s.avail[m.name].wiki) continue; // keep the user's own entry
-          const a = s.avail[m.name] ||= { until: timers[m.name] || null, wiki: true, cats: [], chipless };
+          const a = s.avail[m.name] ||= { until: timers[m.name] || null, wiki: true, cats: [], chipless, kind };
           if (!a.cats.includes(cat.name)) a.cats.push(cat.name);
-          if (!chipless) a.chipless = false;
+          if (!chipless) { a.chipless = false; a.kind = null; }
         }
       }
       s.wiki = { time: Date.now(), cats: cats.map((c) => c.name), unknown };

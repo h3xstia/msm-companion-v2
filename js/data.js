@@ -31,6 +31,7 @@ export const classes = [...new Set(monsters.map((m) => m.class))].sort();
 export const elements = [...new Set(monsters.flatMap((m) => m.elements))].sort();
 
 export const entryFor = (m, island) => m.islands.find((e) => e.island === island);
+export const zapEntry = (m) => m.islands.find((e) => e.how === 'Zap');
 
 // rare/epic monsters that can always be made on this island (amber, workshop) aren't "available" news there
 export const alwaysObtainable = (m, island) => !!island && !!islandByName.get(island)?.alwaysRares && m.rarity !== 'Common';

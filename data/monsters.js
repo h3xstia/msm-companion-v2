@@ -2251,6 +2251,10 @@ MSM.monsters = [
       { island: "Magical Nexus", how: "Teleport" },
       { island: "Mirror Faerie Island", how: "Breed", combo: ["Clavi Gnat", "HippityHop"], time: "2d 12h 32m" },
     ] },
+  { name: "Epic Larvaluss", rarity: "Epic", class: "Magical", elements: ["Psychic", "Bone", "Faerie"],
+    islands: [
+      { island: "Magical Sanctum", how: "Breed", combo: ["Mushaboom", "Déjà-Jin"], time: "1d 20h 22m" },
+    ] },
   { name: "Gloptic", rarity: "Common", class: "Magical", elements: ["Plant", "Water", "Fire", "Psychic"],
     islands: [
       { island: "Psychic Island", how: "Breed", combo: ["Rooba", "Toe Jammer"], time: "1d 8h" },
