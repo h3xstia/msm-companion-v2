@@ -1,5 +1,5 @@
 import { useEffect, useState } from './lib.js';
-import { byName, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES, isWildcard, matchesFor } from './data.js';
+import { byName, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES, isWildcard, matchesFor, zapEntry, alwaysObtainable } from './data.js';
 
 const SAVE_KEY = 'msm2:save';
 const UI_KEY = 'msm2:ui';
@@ -143,6 +143,16 @@ export function isAvailable(name) {
   const a = save.avail[name];
   if (!a || a.chipless) return false;
   return !a.until || a.until > Date.now();
+}
+
+// available on this particular island? vessels only count on the island you zap them on
+export function availableOn(m, island) {
+  const a = save.avail[m.name];
+  if (!a || (a.until && a.until <= Date.now())) return false;
+  const vessel = a.kind === 'vessel' || (a.chipless && (a.cats || []).some((c) => /vessel/i.test(c)));
+  // the vessel's island, plus islands where it can be bought only while the vessel is out (fire expansion)
+  if (vessel) return !!island && (zapEntry(m)?.island === island || !!m.islands.find((e) => e.island === island)?.withVessel);
+  return !a.chipless && !alwaysObtainable(m, island);
 }
 
 export function zapTotals(z) {

@@ -16,6 +16,7 @@ function Reason({ m, a }) {
     const isl = zapEntry(m)?.island;
     const monthly = isl && islandByName.get(isl)?.vesselsMonthly;
     return html`<span class="reason reason-vessel" title=${isl ? `Vessel to zap on ${isl}` : 'Vessel'}>Vessel${isl ? ' · ' + isl.replace(' Island', '') : ''}</span>
+      ${m.islands.some((e) => e.withVessel) && html`<span class="reason reason-relics" title="Can also be bought with Relics while the vessel is available">Relics</span>`}
       ${monthly && html`<${Deadline} until=${suggestDeadline('End of Month')} />`}`;
   }
   if (kind === 'starshop') return html`<span class="reason reason-starshop" title="Buy it in the Starshop">Starshop</span>`;
@@ -35,7 +36,7 @@ function AvailCard({ name, go }) {
       </div>
     </button>
     <div class="avail-islands">${m.islands.filter((e) => a.kind === 'vessel'
-        ? e.how === 'Zap' // a vessel is only news for the island you zap it on
+        ? e.how === 'Zap' || e.withVessel // the vessel's island, and where it's buyable while the vessel is out
         : !islandByName.get(e.island)?.hideInAvailable && !alwaysObtainable(m, e.island)).map((e) => {
       const how = e.combo ? e.combo.join(' + ') : [howLabel(e), ...entryDetails(m, e)].join(' · ');
       return html`<button class="isl-btn" key=${e.island} title=${`${e.island}

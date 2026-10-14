@@ -14,7 +14,7 @@ RARITIES = {"Common", "Rare", "Epic"}
 CLASSES = {"Natural", "Fire", "Magical", "Ethereal", "Mythical", "Seasonal", "Legendary", "Supernatural",
            "Paironormal", "Primordial", "Celestial", "Dipster", "Titansoul"}
 HOWS = {"Breed", "Teleport", "Zap", "Purchase", "Evolve", "Harmonize", "Synthesize", "Fuze", "Dig"}
-ENTRY_KEYS = {"island", "how", "combo", "uses", "time", "enhanced", "fail", "cost", "limit", "eggs", "note"}
+ENTRY_KEYS = {"island", "how", "combo", "uses", "time", "enhanced", "fail", "cost", "limit", "eggs", "note", "withVessel"}
 MONSTER_KEYS = {"name", "rarity", "class", "elements", "img", "islands"}
 TIME_RE = re.compile(r"^(\d+d)?( ?\d+h)?( ?\d+m)?( ?\d+s)?$")
 WILDCARD_RE = re.compile(

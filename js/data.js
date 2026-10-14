@@ -66,6 +66,7 @@ export function entryDetails(m, e) {
     out.push('From ' + (m.rarity === 'Epic' ? 'Rare ' + base : base));
   }
   if (e.uses) out.push(e.uses.join(' + '));
+  if (e.withVessel) out.push('Only while its vessel is available');
   if (e.note) out.push(e.note);
   return out;
 }

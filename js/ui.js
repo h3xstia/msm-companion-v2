@@ -2,7 +2,7 @@ import { html, useEffect, useRef } from './lib.js';
 import { ISLAND_TREE, RARITIES, isWildcard, wildcardElement, byName, alwaysObtainable } from './data.js';
 import { portraitSrc, elementSrc, cx, pct } from './util.js';
 import { islandIcon } from './art.js';
-import { toasts, dismissToast, openDetail, isAvailable, zapNeedsFor, wubNeedsFor } from './store.js';
+import { toasts, dismissToast, openDetail, isAvailable, zapNeedsFor, wubNeedsFor, availableOn } from './store.js';
 
 const PATHS = {
   collection: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
@@ -77,7 +77,7 @@ export const MonLink = ({ name, island, children }) => html`
 
 // one zap tag: names the target if there's only one, otherwise the total still needed
 export function StatusTags({ m, island }) {
-  const avail = isAvailable(m.name) && !alwaysObtainable(m, island);
+  const avail = availableOn(m, island);
   const zaps = zapNeedsFor(m.name);
   const wubs = wubNeedsFor(m.name).filter((w) => !island || w.island === island);
   if (!avail && !zaps.length && !wubs.length) return null;

@@ -676,6 +676,7 @@ body:has(.page-bg) { background: var(--bg); }
 .reason { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 7px; font-size: 12px; font-weight: 650; white-space: nowrap; }
 .reason-vessel { color: var(--avail); background: color-mix(in srgb, var(--avail) 14%, transparent); }
 .reason-starshop { color: var(--rare); background: color-mix(in srgb, var(--rare) 14%, transparent); }
+.reason-relics { color: var(--epic); background: color-mix(in srgb, var(--epic) 14%, transparent); }
 .avail-card.chipless { opacity: 1; }
 
 /* let cards shrink on phones */

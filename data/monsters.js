@@ -34,6 +34,7 @@
 //   enhanced  optional - ONLY when the enhanced time is not 75% of time (it's calculated otherwise)
 //   fail      the time if it fails, for Synthesize / Fuze / Evolve (shown instead of an enhanced time)
 //   cost      optional price text, e.g. "300 Relics", "15,000 Starpower"
+//   withVessel  optional - true if it can only be bought here while its vessel is available (fire expansion monsters)
 //   limit     optional zap deadline, e.g. "End of Month", "10 Days" (leave out = no time limit)
 //   eggs      zap requirements: [["Potbelly", 10], ["Any Rare Air Double", 2], ...]
 //   note      optional free text shown as-is
@@ -1446,43 +1447,43 @@ MSM.monsters = [
     ] },
   { name: "Bisonorus", rarity: "Common", class: "Fire", elements: ["Air", "Plant", "Water", "Fire"],
     islands: [
-      { island: "Psychic Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Psychic Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "1d 16h", limit: "End of Month", eggs: [
           ["Fwog", 7], ["Kayna", 2], ["Plinkajou", 1], ["Fiddlement", 2], ["Spunge", 3],
           ["Thumpies", 3], ["Bonkers", 3], ["Whaddle", 2], ["Oaktopus", 7], ["Glowl", 3],
           ["Furcorn", 7], ["Barrb", 2],
         ] },
-      { island: "Mirror Psychic Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Mirror Psychic Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
     ] },
   { name: "Yelmut", rarity: "Common", class: "Fire", elements: ["Air", "Plant", "Cold", "Fire"],
     islands: [
-      { island: "Light Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Light Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "1d 16h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Furcorn", 4], ["Dandidoo", 3], ["Flowah", 3], ["Glowl", 3],
           ["Wimmzies", 3], ["Clamble", 2], ["Thumpies", 2], ["Ziggurab", 2], ["Sooza", 1],
           ["Tapricorn", 2], ["Gloptic", 1],
         ] },
-      { island: "Mirror Light Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Mirror Light Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
     ] },
   { name: "Flum Ox", rarity: "Common", class: "Fire", elements: ["Air", "Earth", "Water", "Fire"],
     islands: [
-      { island: "Bone Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Bone Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "1d 16h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Cybop", 7], ["Shrubb", 7], ["Glowl", 4], ["Phangler", 4], ["Yuggler", 2],
           ["Reedling", 4], ["Congle", 4], ["Woolabee", 2], ["Repatillo", 2], ["Bridg-it", 2],
           ["Plinkajou", 1],
         ] },
-      { island: "Mirror Bone Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Mirror Bone Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
     ] },
   { name: "Krillby", rarity: "Common", class: "Fire", elements: ["Air", "Earth", "Cold", "Fire"],
     islands: [
-      { island: "Faerie Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Faerie Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "1d 16h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Dandidoo", 8], ["Cybop", 8], ["Flowah", 6], ["Bonkers", 2],
           ["Peckidna", 2], ["T-Rox", 5], ["Reedling", 6], ["Floogull", 2], ["Whaddle", 2],
           ["Clavi Gnat", 2], ["Blow't", 1],
         ] },
-      { island: "Mirror Faerie Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Mirror Faerie Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
     ] },
   { name: "Sneyser", rarity: "Common", class: "Fire", elements: ["Air", "Water", "Cold", "Fire"],
     islands: [
@@ -1495,42 +1496,42 @@ MSM.monsters = [
     ] },
   { name: "Edamimi", rarity: "Common", class: "Fire", elements: ["Plant", "Earth", "Water", "Fire"],
     islands: [
-      { island: "Psychic Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Psychic Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "1d 16h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Shrubb", 6], ["Oaktopus", 7], ["Stogg", 5], ["Flowah", 5], ["Hawlo", 2],
           ["Clamble", 4], ["PomPom", 5], ["Barrb", 2], ["Wynq", 2], ["TooToo", 2], ["Blow't", 1],
         ] },
-      { island: "Mirror Psychic Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Mirror Psychic Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
     ] },
   { name: "PongPing", rarity: "Common", class: "Fire", elements: ["Plant", "Earth", "Cold", "Fire"],
     islands: [
-      { island: "Faerie Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Faerie Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "1d 16h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Shrubb", 6], ["Furcorn", 6], ["Flowah", 4], ["Boskus", 4], ["Bulbo", 1],
           ["Clamble", 4], ["Thumpies", 4], ["Repatillo", 2], ["Woolabee", 2], ["Cantorell", 2],
           ["Gloptic", 1],
         ] },
-      { island: "Mirror Faerie Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Mirror Faerie Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
     ] },
   { name: "Incisaur", rarity: "Common", class: "Fire", elements: ["Plant", "Water", "Cold", "Fire"],
     islands: [
-      { island: "Bone Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Bone Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "1d 16h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Maw", 6], ["Dandidoo", 6], ["Stogg", 4], ["Boskus", 4], ["Denchuhs", 1],
           ["Bowgart", 5], ["Thumpies", 5], ["Repatillo", 1], ["Whaddle", 2], ["Bridg-it", 1],
           ["Pladdie", 1],
         ] },
-      { island: "Mirror Bone Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Mirror Bone Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
     ] },
   { name: "Tiawa", rarity: "Common", class: "Fire", elements: ["Earth", "Water", "Cold", "Fire"],
     islands: [
-      { island: "Light Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Light Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "1d 16h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Maw", 7], ["Quibble", 7], ["Phangler", 4], ["Pluckbill", 2],
           ["Peckidna", 2], ["Bowgart", 5], ["PomPom", 5], ["Floogull", 1], ["Wynq", 2],
           ["Spytrap", 1], ["Pladdie", 1],
         ] },
-      { island: "Mirror Light Island", how: "Purchase", time: "1d 16h", cost: "300 Relics" },
+      { island: "Mirror Light Island", how: "Purchase", time: "1d 16h", cost: "300 Relics", withVessel: true },
     ] },
   { name: "Rare Tring", rarity: "Rare", class: "Fire", elements: ["Air", "Plant", "Earth", "Fire"],
     islands: [
@@ -1650,7 +1651,7 @@ MSM.monsters = [
     ] },
   { name: "Candelavra", rarity: "Common", class: "Fire", elements: ["Air", "Plant", "Earth", "Water", "Fire"],
     islands: [
-      { island: "Fire Haven", how: "Purchase", time: "3d 8h", cost: "500 Relics" },
+      { island: "Fire Haven", how: "Purchase", time: "3d 8h", cost: "500 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "3d 8h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Glowl", 3], ["Flowah", 3], ["Stogg", 3], ["Phangler", 3], ["Boskus", 3],
           ["Pluckbill", 1], ["Yuggler", 1], ["Wimmzies", 1], ["Hawlo", 1], ["Barrb", 1],
@@ -1663,7 +1664,7 @@ MSM.monsters = [
     ] },
   { name: "Drummidary", rarity: "Common", class: "Fire", elements: ["Air", "Plant", "Earth", "Cold", "Fire"],
     islands: [
-      { island: "Light Island", how: "Purchase", time: "3d 8h", cost: "500 Relics" },
+      { island: "Light Island", how: "Purchase", time: "3d 8h", cost: "500 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "3d 8h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Drumpler", 3], ["Fwog", 3], ["Shrubb", 3], ["Cybop", 3], ["Stogg", 3],
           ["HippityHop", 2], ["Peckidna", 2], ["T-Rox", 1], ["Pummel", 1], ["Clamble", 1],
@@ -1672,11 +1673,11 @@ MSM.monsters = [
           ["Uuduk", 1], ["Entbrat", 1], ["Riff", 1], ["Shellbeat", 1], ["Quarrister", 2],
           ["Tring", 1], ["Pladdie", 1], ["Plinkajou", 1],
         ] },
-      { island: "Mirror Light Island", how: "Purchase", time: "3d 8h", cost: "500 Relics" },
+      { island: "Mirror Light Island", how: "Purchase", time: "3d 8h", cost: "500 Relics", withVessel: true },
     ] },
   { name: "Bowhead", rarity: "Common", class: "Fire", elements: ["Air", "Plant", "Water", "Cold", "Fire"],
     islands: [
-      { island: "Psychic Island", how: "Purchase", time: "3d 8h", cost: "500 Relics" },
+      { island: "Psychic Island", how: "Purchase", time: "3d 8h", cost: "500 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "3d 8h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Fwog", 3], ["Maw", 3], ["Oaktopus", 3], ["Quibble", 3], ["Phangler", 3],
           ["Poppette", 2], ["Denchuhs", 2], ["T-Rox", 1], ["Pummel", 1], ["Bowgart", 1],
@@ -1685,11 +1686,11 @@ MSM.monsters = [
           ["Banjaw", 1], ["Entbrat", 1], ["Deedge", 1], ["Riff", 1], ["Shellbeat", 2],
           ["Sneyser", 1], ["Gloptic", 1], ["Plinkajou", 1],
         ] },
-      { island: "Mirror Psychic Island", how: "Purchase", time: "3d 8h", cost: "500 Relics" },
+      { island: "Mirror Psychic Island", how: "Purchase", time: "3d 8h", cost: "500 Relics", withVessel: true },
     ] },
   { name: "Tuskski", rarity: "Common", class: "Fire", elements: ["Air", "Earth", "Water", "Cold", "Fire"],
     islands: [
-      { island: "Faerie Island", how: "Purchase", time: "3d 8h", cost: "500 Relics" },
+      { island: "Faerie Island", how: "Purchase", time: "3d 8h", cost: "500 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "3d 8h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Drumpler", 3], ["Maw", 3], ["Furcorn", 3], ["Pango", 3], ["Boskus", 3],
           ["Bulbo", 2], ["Squot", 2], ["T-Rox", 1], ["Clamble", 1], ["Bowgart", 1],
@@ -1698,11 +1699,11 @@ MSM.monsters = [
           ["Clavi Gnat", 1], ["Entbrat", 1], ["Deedge", 2], ["Riff", 1], ["Quarrister", 1],
           ["Sneyser", 1], ["Blow't", 1], ["Pladdie", 1],
         ] },
-      { island: "Mirror Faerie Island", how: "Purchase", time: "3d 8h", cost: "500 Relics" },
+      { island: "Mirror Faerie Island", how: "Purchase", time: "3d 8h", cost: "500 Relics", withVessel: true },
     ] },
   { name: "Gnarls", rarity: "Common", class: "Fire", elements: ["Plant", "Earth", "Water", "Cold", "Fire"],
     islands: [
-      { island: "Bone Island", how: "Purchase", time: "3d 8h", cost: "500 Relics" },
+      { island: "Bone Island", how: "Purchase", time: "3d 8h", cost: "500 Relics", withVessel: true },
       { island: "Amber Island", how: "Zap", time: "3d 8h", limit: "End of Month", eggs: [
           ["Kayna", 2], ["Shrubb", 3], ["Furcorn", 3], ["Oaktopus", 3], ["Dandidoo", 3],
           ["Flowah", 3], ["Gob", 2], ["Bonkers", 2], ["Clamble", 1], ["Pummel", 1], ["Bowgart", 1],
@@ -1711,7 +1712,7 @@ MSM.monsters = [
           ["Rooba", 1], ["Entbrat", 2], ["Deedge", 1], ["Shellbeat", 1], ["Quarrister", 1],
           ["Tring", 1], ["Blow't", 1], ["Gloptic", 1],
         ] },
-      { island: "Mirror Bone Island", how: "Purchase", time: "3d 8h", cost: "500 Relics" },
+      { island: "Mirror Bone Island", how: "Purchase", time: "3d 8h", cost: "500 Relics", withVessel: true },
     ] },
   { name: "Rare Candelavra", rarity: "Rare", class: "Fire", elements: ["Air", "Plant", "Earth", "Water", "Fire"],
     islands: [
