@@ -47,7 +47,7 @@ MSM.islands = [
   { name: "Wublin Island",              group: "Zapping" },
   { name: "Celestial Island",           group: "Zapping" },
 
-  { name: "Colossingum",                group: "Other", teleportLevel: 5 },
+  { name: "Colossingum",                group: "Other", teleportLevel: 5, hideInAvailable: true },
   { name: "Gold Island",                group: "Other", skin: "Anniversary Month", teleportLevel: 15, hideInAvailable: true },
   { name: "Ethereal Workshop",          group: "Other", alwaysRarities: ["Rare", "Epic"] },
 
