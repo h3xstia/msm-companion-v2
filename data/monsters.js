@@ -353,6 +353,7 @@ MSM.monsters = [
       { island: "Air Island", how: "Breed", combo: ["Tweedle", "Mammott"], time: "8h" },
       { island: "Earth Island", how: "Breed", combo: ["Tweedle", "Mammott"], time: "8h" },
       { island: "Fire Oasis", how: "Breed", combo: ["Tweedle", "Mammott"], time: "8h" },
+      { island: "bbli$zard Island", how: "Teleport", combo: ["Pango", "bbli$zard"], time: "8h" },
       { island: "Colossingum", how: "Teleport" },
       { island: "Gold Island", how: "Teleport" },
       { island: "Mirror Cold Island", how: "Breed", combo: ["Tweedle", "Mammott"], time: "8h" },
@@ -958,6 +959,7 @@ MSM.monsters = [
   { name: "Riff", rarity: "Common", class: "Natural", elements: ["Air", "Earth", "Water", "Cold"],
     islands: [
       { island: "Air Island", how: "Breed", combo: ["Congle", "Noggin"], time: "1d" },
+      { island: "bbli$zard Island", how: "Teleport", combo: ["Riff", "bbli$zard"], time: "1d" },
       { island: "Colossingum", how: "Teleport" },
       { island: "Gold Island", how: "Teleport" },
       { island: "Mirror Air Island", how: "Breed", combo: ["Congle", "Noggin"], time: "1d" },
@@ -2246,6 +2248,12 @@ MSM.monsters = [
       { island: "Magical Nexus", how: "Teleport" },
       { island: "Mirror Light Island", how: "Breed", combo: ["Spytrap", "Flowah"], time: "2d 5h 5m" },
     ] },
+  { name: "Epic Withur", rarity: "Epic", class: "Magical", elements: ["Earth", "Water", "Bone"],
+    islands: [
+      { island: "Bone Island", how: "Breed", combo: ["Thrumble", "Hawlo"], time: "2d 2h 11m" },
+      { island: "Magical Nexus", how: "Teleport" },
+      { island: "Mirror Bone Island", how: "Breed", combo: ["Thrumble", "Hawlo"], time: "2d 2h 11m" },
+    ] },
   { name: "Epic Cantorell", rarity: "Epic", class: "Magical", elements: ["Earth", "Cold", "Faerie"],
     islands: [
       { island: "Faerie Island", how: "Breed", combo: ["Clavi Gnat", "HippityHop"], time: "2d 12h 32m" },
@@ -2806,6 +2814,10 @@ MSM.monsters = [
     islands: [
       { island: "Major Paironormal Carnival", how: "Breed", combo: ["Dakktyl (Major)", "Shhimmer (Major)"], time: "2d 8h" },
     ] },
+  { name: "STRingmaster (Major)", rarity: "Common", class: "Paironormal", elements: ["Control", "Hoax", "Ruin", "Depths"],
+    islands: [
+      { island: "Major Paironormal Carnival", how: "Breed", combo: ["Jerm (Major)", "Shhimmer (Major)"], time: "2d 19h" },
+    ] },
   { name: "Hairionette (Minor)", rarity: "Common", class: "Paironormal", elements: ["Control"],
     islands: [
       { island: "Minor Paironormal Carnival", how: "Fuze", uses: ["Hairionette (Major)"], time: "1d 8h", fail: "22h" },
@@ -2861,6 +2873,10 @@ MSM.monsters = [
   { name: "Illoost (Minor)", rarity: "Common", class: "Paironormal", elements: ["Hoax", "Ruin", "Depths"],
     islands: [
       { island: "Minor Paironormal Carnival", how: "Fuze", uses: ["Illoost (Major)"], time: "2d 8h", fail: "22h" },
+    ] },
+  { name: "STRingmaster (Minor)", rarity: "Common", class: "Paironormal", elements: ["Control", "Hoax", "Ruin", "Depths"],
+    islands: [
+      { island: "Minor Paironormal Carnival", how: "Fuze", uses: ["STRingmaster (Major)"], time: "2d 19h", fail: "22h" },
     ] },
   { name: "Lowb", rarity: "Common", class: "Primordial", elements: ["Primordial Plant"],
     islands: [
@@ -3371,6 +3387,10 @@ MSM.monsters = [
     islands: [
       { island: "Fire Haven", how: "Purchase", time: "8h", cost: "100 Relics" },
     ] },
+  { name: "AnomaLee", rarity: "Common", class: "Legendary", elements: ["Legendary"],
+    islands: [
+      { island: "Psychic Island", how: "Purchase", time: "8h", cost: "100 Relics" },
+    ] },
   { name: "bbli$zard", rarity: "Common", class: "Legendary", elements: ["Legendary"],
     islands: [
       { island: "Cold Island", how: "Breed", combo: ["Thumpies", "Congle"], time: "1d 11h" },
@@ -3396,6 +3416,14 @@ MSM.monsters = [
   { name: "bbjunior$", rarity: "Common", class: "Legendary", elements: ["Legendary"],
     islands: [
       { island: "bbli$zard Island", how: "Teleport", combo: ["bbli$zard", "Tweedle"], time: "1d 11h" },
+    ] },
+  { name: "bb$ynth", rarity: "Common", class: "Legendary", elements: ["Legendary"],
+    islands: [
+      { island: "bbli$zard Island", how: "Teleport", combo: ["bbli$zard", "Pango"], time: "1d 11h" },
+    ] },
+  { name: "bb$ervo", rarity: "Common", class: "Legendary", elements: ["Legendary"],
+    islands: [
+      { island: "bbli$zard Island", how: "Teleport", combo: ["bbli$zard", "Riff"], time: "1d 11h" },
     ] },
   { name: "Alcordion", rarity: "Common", class: "Legendary", elements: ["Legendary"],
     islands: [
@@ -4315,6 +4343,31 @@ MSM.monsters = [
       { island: "Mirror Faerie Island", how: "Purchase", cost: "6 Keys" },
       { island: "Mirror Bone Island", how: "Purchase", cost: "6 Keys" },
     ] },
+  { name: "Terrene Sol", rarity: "Rare", class: "Dipster", elements: ["Dipster"],
+    islands: [
+      { island: "Plant Island", how: "Dig" },
+      { island: "Cold Island", how: "Dig" },
+      { island: "Air Island", how: "Dig" },
+      { island: "Water Island", how: "Dig" },
+      { island: "Earth Island", how: "Dig" },
+      { island: "Fire Haven", how: "Dig" },
+      { island: "Fire Oasis", how: "Dig" },
+      { island: "Light Island", how: "Dig" },
+      { island: "Psychic Island", how: "Dig" },
+      { island: "Faerie Island", how: "Dig" },
+      { island: "Bone Island", how: "Dig" },
+      { island: "Ethereal Island", how: "Dig" },
+      { island: "Magical Sanctum", how: "Dig" },
+      { island: "Mirror Plant Island", how: "Dig" },
+      { island: "Mirror Cold Island", how: "Dig" },
+      { island: "Mirror Air Island", how: "Dig" },
+      { island: "Mirror Water Island", how: "Dig" },
+      { island: "Mirror Earth Island", how: "Dig" },
+      { island: "Mirror Light Island", how: "Dig" },
+      { island: "Mirror Psychic Island", how: "Dig" },
+      { island: "Mirror Faerie Island", how: "Dig" },
+      { island: "Mirror Bone Island", how: "Dig" },
+    ] },
   { name: "Waxen La", rarity: "Rare", class: "Dipster", elements: ["Dipster"],
     islands: [
       { island: "Plant Island", how: "Dig" },
@@ -4391,6 +4444,31 @@ MSM.monsters = [
       { island: "Mirror Bone Island", how: "Dig" },
     ] },
   { name: "Queen Re", rarity: "Epic", class: "Dipster", elements: ["Dipster"],
+    islands: [
+      { island: "Plant Island", how: "Dig" },
+      { island: "Cold Island", how: "Dig" },
+      { island: "Air Island", how: "Dig" },
+      { island: "Water Island", how: "Dig" },
+      { island: "Earth Island", how: "Dig" },
+      { island: "Fire Haven", how: "Dig" },
+      { island: "Fire Oasis", how: "Dig" },
+      { island: "Light Island", how: "Dig" },
+      { island: "Psychic Island", how: "Dig" },
+      { island: "Faerie Island", how: "Dig" },
+      { island: "Bone Island", how: "Dig" },
+      { island: "Ethereal Island", how: "Dig" },
+      { island: "Magical Sanctum", how: "Dig" },
+      { island: "Mirror Plant Island", how: "Dig" },
+      { island: "Mirror Cold Island", how: "Dig" },
+      { island: "Mirror Air Island", how: "Dig" },
+      { island: "Mirror Water Island", how: "Dig" },
+      { island: "Mirror Earth Island", how: "Dig" },
+      { island: "Mirror Light Island", how: "Dig" },
+      { island: "Mirror Psychic Island", how: "Dig" },
+      { island: "Mirror Faerie Island", how: "Dig" },
+      { island: "Mirror Bone Island", how: "Dig" },
+    ] },
+  { name: "Bishop Mi", rarity: "Epic", class: "Dipster", elements: ["Dipster"],
     islands: [
       { island: "Plant Island", how: "Dig" },
       { island: "Cold Island", how: "Dig" },
