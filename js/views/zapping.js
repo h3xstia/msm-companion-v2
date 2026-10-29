@@ -1,5 +1,5 @@
 import { html, useEffect, useMemo, useState } from '../lib.js';
-import { byName, onIsland, ZAP_ISLANDS, matchesFor } from '../data.js';
+import { byName, onIsland, ZAP_ISLANDS, matchesFor, isWildcard } from '../data.js';
 import { cx, matches, pct, plural, suggestDeadline, urgency } from '../util.js';
 import { save, ui, setUi, commit, isAvailable, zapTotals, zapEggs, openDetail, isOwned } from '../store.js';
 import { Deadline } from '../overlays.js';
@@ -72,7 +72,8 @@ function EditDeadline({ zap, onClose }) {
   <//>`;
 }
 
-function EggRow({ z, egg, need }) {
+// target: show the zap target in the head instead of the egg (used in the monster drawer)
+export function EggRow({ z, egg, need, target }) {
   const sent = z.sent[egg] || 0, bred = z.bred[egg] || 0;
   const done = sent >= need;
   const partial = !done && sent + bred > 0;
@@ -82,9 +83,12 @@ function EggRow({ z, egg, need }) {
   const set = (field, v) => commit((s) => { s.zaps.find((x) => x.id === z.id)[field][egg] = v; });
   return html`<div class=${cx('egg', done && 'done', partial && 'partial', avail && 'avail')}>
     <div class="egg-head">
-      <button class="egg-img" onClick=${() => byName.has(egg) && openDetail(egg, z.island)} aria-label=${egg}>
-        <${TokenImg} token=${egg} island=${z.island} size=${36} /></button>
-      <div class="egg-name"><strong>${egg}</strong>
+      ${target
+        ? html`<${MonImg} m=${byName.get(z.monster)} island=${z.island} size=${36} />`
+        : html`<button class="egg-img" onClick=${() => byName.has(egg) && openDetail(egg, z.island)} aria-label=${egg}>
+          <${TokenImg} token=${egg} island=${z.island} size=${36} /></button>`}
+      <div class="egg-name"><strong>${target ? z.monster : egg}</strong>
+        ${target && html`<span class="muted small">${z.island}${isWildcard(egg) ? ' · as ' + egg : ''}</span>`}
         <span class="egg-status">${done ? html`<span class="c-done">Done</span>` : need - sent - bred > 0 ? `${need - sent - bred} left` : html`<span class="c-bred">${need - sent} to send</span>`}
           ${avail && html`<span class="tag tag-avail" title=${'Available now: ' + availNow.join(', ')}>Available</span>`}</span></div>
       <span class="egg-count" title=${`${Math.min(sent + bred, need)} of ${need} (${sent} sent, ${bred} bred)`}>${Math.min(sent + bred, need)}<small>/${need}</small></span>

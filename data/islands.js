@@ -10,7 +10,6 @@
 //   teleportName   optional - what the game calls teleporting here (default "Teleport")
 //   skin           optional - seasonal island skin. Its art is images/islands/<island> (<skin>).webp (icon)
 //                  and images/islands/bg/<island> (<skin>).webp (background), all lowercase
-//   vesselsMonthly optional - vessels here rotate monthly, so an available vessel ends at the end of the month
 //   hideInAvailable optional - don't show this island on the Available tab's island icons
 //   alwaysRarities optional - rarities that can always be got here (evolve, synthesize, teleport),
 //                  so they're never marked "Available" for this island and are left off the Available tab
@@ -43,7 +42,7 @@ MSM.islands = [
   { name: "Major Paironormal Carnival", group: "Teleporting/Transposing", teleportLevel: 18, elements: ["Control", "Hoax", "Ruin", "Depths"] },
   { name: "Seasonal Shanty",            group: "Teleporting/Transposing", teleportLevel: 15, alwaysRarities: ["Common"] },
 
-  { name: "Amber Island",               group: "Zapping", skin: "Echoes of Eco", alwaysRarities: ["Rare", "Epic"], vesselsMonthly: true },
+  { name: "Amber Island",               group: "Zapping", skin: "Echoes of Eco", alwaysRarities: ["Rare", "Epic"] },
   { name: "Wublin Island",              group: "Zapping" },
   { name: "Celestial Island",           group: "Zapping" },
 

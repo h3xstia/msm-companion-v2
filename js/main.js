@@ -36,11 +36,18 @@ const PHONE_NAV = ['collection', 'breed', 'zapping', 'available'];
 
 // view goes in the hash so the back button works
 const viewFromHash = () => { const v = location.hash.slice(2); return VIEWS[v] ? v : null; };
+// each tab keeps its scroll position for the session (per island on collection/wubbox, so jumping to another island starts at the top)
+const scrollPos = {};
+history.scrollRestoration = 'manual';
+const scrollKey = (view) => view === 'collection' ? view + ui.col.island : view === 'wubbox' ? view + ui.wub.island : view;
+function switchView(view) {
+  if (view === ui.view) return;
+  scrollPos[scrollKey(ui.view)] = window.scrollY;
+  setUi({ view });
+}
 function go(view) {
   if (location.hash !== '#/' + view) location.hash = '/' + view;
-  setUi({ view });
-  document.querySelector('main')?.scrollTo(0, 0);
-  window.scrollTo(0, 0);
+  switchView(view);
 }
 
 function applyTheme(theme) {
@@ -100,7 +107,7 @@ function App() {
   const bg = bgIsland ? islandBg(bgIsland) : null;
 
   useEffect(() => {
-    const onHash = () => { const v = viewFromHash(); if (v && v !== ui.view) setUi({ view: v }); };
+    const onHash = () => { const v = viewFromHash(); if (v) switchView(v); };
     addEventListener('hashchange', onHash);
     const onKey = (e) => {
       const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName);
@@ -116,7 +123,10 @@ function App() {
     mq.addEventListener('change', f);
     return () => mq.removeEventListener('change', f);
   }, [ui.theme]);
-  useEffect(() => { document.title = VIEWS[view].label + ' · MSM Companion'; setMore(false); }, [view]);
+  useEffect(() => {
+    document.title = VIEWS[view].label + ' · MSM Companion'; setMore(false);
+    window.scrollTo(0, scrollPos[scrollKey(view)] || 0);
+  }, [view]);
 
   return html`
     <aside class="sidebar">

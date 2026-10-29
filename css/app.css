@@ -344,6 +344,7 @@ main { margin-left: var(--sidebar); min-height: 100vh; }
 .status-zap { color: var(--zap); background: color-mix(in srgb, var(--zap) 11%, transparent); }
 .status-wub { color: var(--wub); background: color-mix(in srgb, var(--wub) 11%, transparent); }
 .status-muted { color: var(--text-2); background: var(--surface-2); }
+.drawer-sub { margin-top: 22px; }
 
 .entries { display: grid; gap: 6px; container-type: inline-size; }
 /* island rows: one line on wide screens, stacked when narrow (detail panel, phones) */

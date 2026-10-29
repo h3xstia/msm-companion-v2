@@ -1,6 +1,5 @@
 import { html, useEffect, useState } from '../lib.js';
 import { byName, howLabel, entryDetails, islandByName, alwaysObtainable, zapEntry } from '../data.js';
-import { suggestDeadline } from '../util.js';
 import { cx, plural, relTime } from '../util.js';
 import { save, commit, isAvailable, openDetail, purgeExpired, toast, setUi } from '../store.js';
 import { syncFromWiki, wikiStale, WIKI_PAGE } from '../wiki.js';
@@ -14,10 +13,8 @@ function Reason({ m, a }) {
   const kind = a.kind || (a.chipless ? (a.cats || []).some((c) => /vessel/i.test(c)) ? 'vessel' : 'starshop' : null);
   if (kind === 'vessel') {
     const isl = zapEntry(m)?.island;
-    const monthly = isl && islandByName.get(isl)?.vesselsMonthly;
     return html`<span class="reason reason-vessel" title=${isl ? `Vessel to zap on ${isl}` : 'Vessel'}>Vessel${isl ? ' · ' + isl.replace(' Island', '') : ''}</span>
-      ${m.islands.some((e) => e.withVessel) && html`<span class="reason reason-relics" title="Can also be bought with Relics while the vessel is available">Relics</span>`}
-      ${monthly && html`<${Deadline} until=${suggestDeadline('End of Month')} />`}`;
+      ${m.islands.some((e) => e.withVessel) && html`<span class="reason reason-relics" title="Can also be bought with Relics while the vessel is available">Relics</span>`}`;
   }
   if (kind === 'starshop') return html`<span class="reason reason-starshop" title="Buy it in the Starshop">Starshop</span>`;
   return a.until ? html`<${Deadline} until=${a.until} />` : null;

@@ -1,9 +1,10 @@
 import { html, useEffect, useMemo, useRef, useState } from './lib.js';
-import { byName, monsters, islands, howLabel, HOW, entryDetails, isWildcard } from './data.js';
+import { byName, monsters, islands, howLabel, HOW, entryDetails, isWildcard, matchesFor } from './data.js';
 import { entryTimes, timeLeft, urgency, cx, matches } from './util.js';
 import {
-  save, detail, openDetail, closeDetail, isOwned, setOwned, isAvailable, zapNeedsFor, wubNeedsFor, setUi,
+  save, detail, openDetail, closeDetail, isOwned, setOwned, isAvailable, zapEggs, wubNeedsFor, setUi,
 } from './store.js';
+import { EggRow } from './views/zapping.js';
 import { skinOn } from './art.js';
 import { Icon, MonImg, ElemIcons, Rarity, TokenImg, Dialog, Times, IslandIcon } from './ui.js';
 
@@ -42,7 +43,8 @@ export function DetailPanel() {
   if (!m) return null;
   const a = save.avail[m.name];
   const avail = isAvailable(m.name);
-  const zaps = zapNeedsFor(m.name);
+  // every tracked zap that takes this monster as an egg, done ones too so the box doesn't vanish mid-edit
+  const zaps = save.zaps.flatMap((z) => zapEggs(z).filter(([egg]) => matchesFor(egg).includes(m)).map(([egg, need]) => ({ z, egg, need })));
   const wubs = wubNeedsFor(m.name);
   const ownedN = m.islands.filter((e) => isOwned(e.island, m.name)).length;
 
@@ -58,19 +60,19 @@ export function DetailPanel() {
         <button class="icon-btn" aria-label="Close" onClick=${closeDetail}><${Icon} name="close" /></button>
       </header>
       <div class="drawer-body">
-        ${(avail || a || zaps.length > 0 || wubs.length > 0) && html`<section class="status-list">
+        ${(avail || a || wubs.length > 0) && html`<section class="status-list">
           ${a && html`<div class=${cx('status', avail ? 'status-avail' : 'status-muted')}>
             <${Icon} name="available" size=${16} />
             ${a.chipless ? 'In the Starshop / vessels' : 'Available now'}
             ${a.until && html` · ${timeLeft(a.until - Date.now()) || 'expired'} left`}
             ${a.cats?.length ? html` · ${a.cats.join(', ')}` : ''}</div>`}
-          ${zaps.map((z) => html`<div class="status status-zap"><${Icon} name="zap" size=${16} />
-            ${z.zap.monster} still needs ${z.still}${z.via ? ` (as ${z.via})` : ''}</div>`)}
           ${wubs.map((w) => html`<div class="status status-wub"><${Icon} name="wubbox" size=${16} />
             ${w.island} · ${w.type} Wubbox</div>`)}
         </section>`}
         <h3>Islands</h3>
         <div class="entries">${m.islands.map((e) => html`<${EntryRow} m=${m} e=${e} key=${e.island} />`)}</div>
+        ${zaps.length > 0 && html`<h3 class="drawer-sub">Zapping</h3>
+          <div class="egg-grid">${zaps.map(({ z, egg, need }) => html`<${EggRow} key=${z.id + egg} z=${z} egg=${egg} need=${need} target />`)}</div>`}
       </div>
     </aside>`;
 }
