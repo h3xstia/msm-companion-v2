@@ -1,5 +1,5 @@
 // breeding rules (based on the msm wiki)
-import { monsters, islands, satisfies } from './data.js';
+import { monsters, islands, onIsland, satisfies } from './data.js';
 
 const ISLAND_ELEMENTS = Object.fromEntries(islands.filter((i) => i.elements).map((i) => [i.name, i.elements]));
 
@@ -21,13 +21,12 @@ function elementsFit(m, isl) {
 
 const canParent = (m, isl) => (m.rarity === 'Common' || m.rarity === 'Rare') && elementsFit(m, isl);
 
+// epics only come from listed combos, rare singles from two triples
 function isElementResult(m, isl) {
-  if (m.rarity === 'Epic') return false;
-  if (m.rarity === 'Rare' && m.elements.length === 1) return false;
-  return elementsFit(m, isl);
+  return m.rarity !== 'Epic' && elementsFit(m, isl);
 }
 
-function breedable(e) {
+export function breedable(e) {
   if (!e.combo) return false;
   if (e.how === 'Breed') return true;
   // teleport entries with a time can be rebred there (shanty, mythical etc)
@@ -44,9 +43,13 @@ function comboMatches(combo, p1, p2, isl) {
   return (slot(combo[0], p1) && slot(combo[1], p2)) || (slot(combo[0], p2) && slot(combo[1], p1));
 }
 
-export function computeOffspring(p1, p2) {
-  if (!p1 || !p2) return [];
-  const p1key = setKey(p1.elements), p2key = setKey(p2.elements);
+// a monster and its rare version count as one species
+const species = (m) => m.name.replace(/^Rare /, '');
+
+// island = only check that island (much faster when going through every pair)
+export function computeOffspring(p1, p2, island) {
+  if (!p1 || !p2 || p1 === p2) return [];
+  const sameSpecies = species(p1) === species(p2);
   const disjoint = !p2.elements.some((e) => p1.elements.includes(e));
   const unionKey = setKey(new Set([...p1.elements, ...p2.elements]));
   // natural doubles are 100%, parents can't come out
@@ -54,29 +57,26 @@ export function computeOffspring(p1, p2) {
     p1.class === 'Natural' && p2.class === 'Natural';
   const out = [];
 
-  for (const m of monsters) {
+  for (const m of island ? onIsland.get(island).map((x) => x.m) : monsters) {
     const found = {};
+    const isParent = species(m) === species(p1) || species(m) === species(p2);
+    // only ever from two different triples, never as a failed attempt
+    const rareSingle = m.rarity === 'Rare' && m.elements.length === 1;
     for (const e of m.islands) {
-      if (!breedable(e) || found[e.island]) continue;
+      if (!breedable(e) || found[e.island] || (island && e.island !== island)) continue;
       if (!hasIsland(p1, e.island) || !hasIsland(p2, e.island)) continue;
-      // combo listed in the data
-      if (comboMatches(e.combo, p1, p2, e.island)) {
-        // rare singles need two different triples
-        if (m.rarity === 'Rare' && m.elements.length === 1 && p1.name === p2.name && /^Any \S+ Triple$/.test(e.combo[0])) continue;
+      // a monster + its rare version only gives that monster
+      if (sameSpecies) {
+        if (isParent && !rareSingle) found[e.island] = e;
+      } else if (comboMatches(e.combo, p1, p2, e.island)) {
         found[e.island] = e;
-        continue;
-      }
-      // parents (and rare versions) can come out
-      const mk = setKey(m.elements);
-      const isParentVariant = [p1.name, p2.name].some((pn) => m.name === pn || m.name === 'Rare ' + pn || 'Rare ' + m.name === pn);
-      if (!natSingles && isParentVariant && (mk === p1key || mk === p2key) && (m.rarity === 'Common' || m.rarity === 'Rare')) {
+      } else if (isParent) {
+        // the parents (or their rare versions) can come out as a failed attempt
+        if (!natSingles && !rareSingle) found[e.island] = e;
+      } else if (disjoint && setKey(m.elements) === unionKey && isElementResult(m, e.island) &&
+        canParent(p1, e.island) && canParent(p2, e.island)) {
         found[e.island] = e;
-        continue;
       }
-      // element addition
-      if (!isElementResult(m, e.island)) continue;
-      if (!canParent(p1, e.island) || !canParent(p2, e.island)) continue;
-      if (disjoint && mk === unionKey) found[e.island] = e;
     }
     const keys = Object.keys(found);
     if (keys.length) out.push({ m, islands: keys, entries: found });
@@ -87,6 +87,7 @@ export function computeOffspring(p1, p2) {
 }
 
 export function sharesIsland(a, b) {
+  if (a === b) return false;
   for (const isl of Object.keys(ISLAND_ELEMENTS)) {
     if (canParent(a, isl) && canParent(b, isl)) return true;
   }

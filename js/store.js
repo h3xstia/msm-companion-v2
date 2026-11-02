@@ -18,7 +18,7 @@ const UI_DEFAULT = {
   view: 'collection',
   theme: 'auto',
   col: { island: 'Plant Island', rarity: '', hideOwned: false, q: '' },
-  breed: { p1: '', p2: '', island: '' },
+  breed: { p1: '', p2: '', island: '', mode: 'sim', planIsland: 'Plant Island' },
   db: { q: '', rarity: '', cls: '', elem: '', island: '', status: [] },
   wub: { island: 'Plant Island', type: 'common' },
   isl: { island: '' },

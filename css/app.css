@@ -461,6 +461,17 @@ main { margin-left: var(--sidebar); min-height: 100vh; }
 .result-islands li { display: flex; justify-content: space-between; gap: 8px; }
 .result-islands li span:first-child { display: inline-flex; align-items: center; gap: 4px; color: var(--text-2); }
 .result-islands li.owned span:first-child { color: var(--owned); }
+.plan-list { display: grid; gap: 10px; margin-top: 16px; }
+.plan-card { border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); overflow: hidden; min-width: 0; }
+.plan-head { display: flex; align-items: center; gap: 12px; padding: 12px; flex-wrap: wrap; }
+.plan-rank { font-size: 18px; font-weight: 700; color: var(--text-2); min-width: 20px; text-align: center; font-variant-numeric: tabular-nums; }
+.plan-parents { display: inline-flex; align-items: center; gap: 6px; }
+.plan-title { display: grid; flex: 1; min-width: 160px; }
+.plan-outcomes { display: grid; gap: 2px; padding: 6px; border-top: 1px solid var(--border); }
+.plan-outcome { display: flex; align-items: center; gap: 10px; padding: 6px; border: 0; border-radius: 10px; background: none; color: inherit; text-align: left; flex-wrap: wrap; }
+.plan-outcome:hover { background: var(--surface-2); }
+.plan-name { display: inline-flex; align-items: center; gap: 8px; flex: 1; min-width: 130px; }
+.tag-new { color: var(--accent-text); background: var(--accent-soft); }
 
 /* available */
 .sync-line { margin: -6px 0 6px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
