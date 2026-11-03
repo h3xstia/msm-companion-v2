@@ -41,10 +41,9 @@ def load_js(path, var):
         else:
             out.append(t)
     joined = "".join(out).strip()
-    if joined.endswith(";"):
-        joined = joined[:-1]
     try:
-        return json.loads(joined)
+        # only the first value, the file can define more after it
+        return json.JSONDecoder().raw_decode(joined)[0]
     except json.JSONDecodeError as e:
         line = src[:start].count("\n") + joined[:e.pos].count("\n") + 1
         sys.exit(f"ERROR: {os.path.basename(path)} has a syntax problem near line {line}: {e.msg}")
