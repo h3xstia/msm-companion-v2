@@ -1,8 +1,8 @@
 import { html, useEffect, useRef } from './lib.js';
-import { ISLAND_TREE, RARITIES, isWildcard, wildcardElement, byName, alwaysObtainable } from './data.js';
+import { ISLAND_TREE, RARITIES, isWildcard, wildcardElement, byName, alwaysObtainable, matchesFor } from './data.js';
 import { portraitSrc, elementSrc, cx, pct } from './util.js';
 import { islandIcon } from './art.js';
-import { toasts, dismissToast, openDetail, isAvailable, zapNeedsFor, wubNeedsFor, availableOn } from './store.js';
+import { toasts, dismissToast, openDetail, isAvailable, zapNeedsFor, wubNeedsFor, availableOn, commit } from './store.js';
 
 const PATHS = {
   collection: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
@@ -187,5 +187,35 @@ export function Stepper({ value, max, onChange, label }) {
     <input type="number" inputmode="numeric" min="0" max=${max} value=${value}
       onChange=${(e) => set(parseInt(e.currentTarget.value, 10) || 0)} />
     <button aria-label=${'More ' + label} disabled=${max != null && value >= max} onClick=${() => set(value + 1)}><${Icon} name="plus" size=${14} /></button>
+  </div>`;
+}
+
+// one egg of a zap tracker. target: show the zap target in the head instead of the egg (used in the monster drawer)
+export function EggRow({ z, egg, need, target }) {
+  const sent = z.sent[egg] || 0, bred = z.bred[egg] || 0;
+  const done = sent >= need;
+  const partial = !done && sent + bred > 0;
+  // wildcard eggs: any monster that fits and is available counts
+  const availNow = done ? [] : matchesFor(egg).filter((m) => isAvailable(m.name)).map((m) => m.name);
+  const avail = availNow.length > 0;
+  const set = (field, v) => commit((s) => { s.zaps.find((x) => x.id === z.id)[field][egg] = v; });
+  return html`<div class=${cx('egg', done && 'done', partial && 'partial', avail && 'avail')}>
+    <div class="egg-head">
+      ${target
+        ? html`<${MonImg} m=${byName.get(z.monster)} island=${z.island} size=${36} />`
+        : html`<button class="egg-img" onClick=${() => byName.has(egg) && openDetail(egg, z.island)} aria-label=${egg}>
+          <${TokenImg} token=${egg} island=${z.island} size=${36} /></button>`}
+      <div class="egg-name"><strong>${target ? z.monster : egg}</strong>
+        ${target && html`<span class="muted small">${z.island}${isWildcard(egg) ? ' · as ' + egg : ''}</span>`}
+        <span class="egg-status">${done ? html`<span class="c-done">Done</span>` : need - sent - bred > 0 ? `${need - sent - bred} left` : html`<span class="c-bred">${need - sent} to send</span>`}
+          ${avail && html`<span class="tag tag-avail" title=${'Available now: ' + availNow.join(', ')}>Available</span>`}</span></div>
+      <span class="egg-count" title=${`${Math.min(sent + bred, need)} of ${need} (${sent} sent, ${bred} bred)`}>${Math.min(sent + bred, need)}<small>/${need}</small></span>
+    </div>
+    <div class="progress split-bar egg-bar"><span class="sent" style=${{ width: pct(Math.min(sent, need), need) + '%' }}></span>
+      <span class="bred" style=${{ width: pct(Math.min(bred, need - Math.min(sent, need)), need) + '%' }}></span></div>
+    <div class="egg-counts">
+      <label class="c-sent"><span>Sent</span><${Stepper} label="sent" value=${sent} max=${need} onChange=${(v) => set('sent', v)} /></label>
+      <label class="c-bred"><span>Bred</span><${Stepper} label="bred" value=${bred} max=${need} onChange=${(v) => set('bred', v)} /></label>
+    </div>
   </div>`;
 }

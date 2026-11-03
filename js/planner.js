@@ -1,7 +1,7 @@
 // suggests what to breed on an island. ignores breed time and offspring odds:
 // a pair scores the total value of everything it could produce
-import { alwaysObtainable, wubboxKey, wubboxList, WUBBOX_TYPES } from './data.js';
-import { save, isOwned, availableOn, zapNeedsFor } from './store.js';
+import { alwaysObtainable, WUBBOX_TYPES } from './data.js';
+import { save, isOwned, availableOn, zapNeedsFor, wubboxProgress } from './store.js';
 import { computeOffspring, parentCandidates } from './breeding.js';
 import { urgency } from './util.js';
 
@@ -21,11 +21,8 @@ function canHatch(m, island) {
 function wubboxNeed(m, island) {
   let best = null;
   for (const type of WUBBOX_TYPES) {
-    const { list, required } = wubboxList(island, type);
-    if (!list.includes(m.name)) continue;
-    const boxed = save.boxed[wubboxKey(island, type)] || {};
-    const n = list.filter((x) => boxed[x]).length;
-    if (boxed[m.name] || n >= required) continue;
+    const { list, required, boxed, n } = wubboxProgress(island, type);
+    if (!list.includes(m.name) || boxed[m.name] || n >= required) continue;
     const value = n ? NEED.wubStarted + NEED.wubProgress * n / required : NEED.wubUnstarted;
     if (!best || value > best.value) best = { kind: 'wub', value, label: n ? `Wubbox ${n}/${required}` : 'Wubbox', title: `${type} Wubbox on ${island}` };
   }

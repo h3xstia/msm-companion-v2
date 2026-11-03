@@ -1,7 +1,7 @@
 import { html, useMemo, useRef, useState } from '../lib.js';
 import { byName, islands, onIsland } from '../data.js';
 import { entryTimes, cx, matches, plural } from '../util.js';
-import { ui, setUi, useStore, isOwned, isAvailable, openDetail } from '../store.js';
+import { ui, setUi, useStore, isOwned, availableOn, openDetail, islandCount } from '../store.js';
 import { computeOffspring, sharesIsland, parentCandidates, breedable } from '../breeding.js';
 import { suggestPairs, planParents } from '../planner.js';
 import { wikiStale } from '../wiki.js';
@@ -64,7 +64,7 @@ function ResultCard({ o }) {
     <div class="result-top">
       <${MonImg} m=${m} island=${o.islands[0]} size=${52} />
       <div><strong>${m.name}</strong>
-        ${isAvailable(m.name) && html`<span class="tag tag-avail">Available</span>`}
+        ${o.islands.some((isl) => availableOn(m, isl)) && html`<span class="tag tag-avail">Available</span>`}
         <${ElemIcons} list=${m.elements} size=${16} /></div>
     </div>
     <ul class="result-islands">${o.islands.map((isl) => {
@@ -80,11 +80,7 @@ const ModeSwitch = () => html`<${Segmented} value=${ui.breed.mode} options=${[['
   onChange=${(mode) => setUi('breed', { mode })} />`;
 
 // islands where something can actually be bred
-function planCount(island) {
-  const all = onIsland.get(island) || [];
-  if (!all.some(({ e }) => breedable(e))) return null;
-  return [all.filter(({ m }) => isOwned(island, m.name)).length, all.length];
-}
+const planCount = (island) => (onIsland.get(island) || []).some(({ e }) => breedable(e)) ? islandCount(island) : null;
 
 function PlanCard({ pair, rank, island }) {
   const { p1, p2, useful, total, others } = pair;
@@ -119,7 +115,7 @@ function SuggestView() {
       <header class="pane-head">
         <div class="head-title">
           <img class="island-icon-lg" src=${islandIcon(island)} alt="" onError=${(e) => (e.currentTarget.style.display = 'none')} />
-          <div><h1>Breed Sim</h1><p class="muted">Best pairs to breed on ${island}</p></div>
+          <div><h1>Breed</h1><p class="muted">Best pairs to breed on ${island}</p></div>
         </div>
         <div class="head-actions"><${ModeSwitch} /></div>
       </header>
@@ -146,7 +142,7 @@ function SimView() {
   const groups = ['Common', 'Rare', 'Epic'].map((r) => [r, shown.filter((o) => o.m.rarity === r)]).filter(([, l]) => l.length);
 
   return html`<section class="pane">
-    <header class="pane-head"><div><h1>Breed Sim</h1><p class="muted">Pick two parents to see what they can make.</p></div>
+    <header class="pane-head"><div><h1>Breed</h1><p class="muted">Pick two parents to see what they can make.</p></div>
       <div class="head-actions"><${ModeSwitch} /></div></header>
     <div class="parents">
       <${ParentPicker} slot="p1" label="Parent 1" other=${p2} />

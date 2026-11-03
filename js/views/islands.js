@@ -1,9 +1,8 @@
 import { html, useState } from '../lib.js';
-import { islandByName, ISLAND_TREE, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES, onIsland } from '../data.js';
+import { islandByName, ISLAND_TREE, wubbox, WUBBOX_TYPES, onIsland } from '../data.js';
 import { cx, pct, plural } from '../util.js';
 import { islandIcon } from '../art.js';
-import { save, ui, setUi, toast } from '../store.js';
-import { islandCount } from './collection.js';
+import { save, ui, setUi, toast, wubboxProgress, islandCount } from '../store.js';
 import { getIslandImage, setIslandImage, allIslandImages } from '../images.js';
 import { Icon, Progress, Empty } from '../ui.js';
 
@@ -26,10 +25,9 @@ function compress(file, maxPx = 1920, quality = 0.8) {
 function wubboxSummary(name) {
   if (!wubbox[name]) return [];
   return WUBBOX_TYPES.map((t) => {
-    const { list, required } = wubboxList(name, t);
+    const { list, required, n } = wubboxProgress(name, t);
     if (!list.length) return null;
-    const b = save.boxed[wubboxKey(name, t)] || {};
-    return { type: t, n: Math.min(required, list.filter((x) => b[x]).length), required };
+    return { type: t, n: Math.min(required, n), required };
   }).filter(Boolean);
 }
 

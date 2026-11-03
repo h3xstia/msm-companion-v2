@@ -13,6 +13,8 @@
 //   hideInAvailable optional - don't show this island on the Available tab's island icons
 //   alwaysRarities optional - rarities that can always be got here (evolve, synthesize, teleport),
 //                  so they're never marked "Available" for this island and are left off the Available tab
+//
+// MSM.notParents at the bottom lists monsters that can't be breeding parents.
 
 window.MSM = window.MSM || {};
 
@@ -69,3 +71,13 @@ MSM.islands = [
 
   { name: "Minor Paironormal Carnival", timeline: "Mirror", group: "Transposing" },
 ];
+
+// Monsters the Breed Sim never offers as parents
+//
+//   classes    whole classes that can't be used to breed
+//   names      single monsters (the fire expansion commons are zapped on Amber, not bred)
+MSM.notParents = {
+  classes: ["Supernatural", "Primordial", "Titansoul", "Dipster", "Celestial"],
+  names: ["Mimic", "Bisonorus", "Yelmut", "Flum Ox", "Krillby", "Edamimi", "PongPing", "Incisaur",
+    "Tiawa", "Candelavra", "Drummidary", "Bowhead", "Tuskski", "Gnarls"],
+};

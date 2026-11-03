@@ -1,5 +1,5 @@
 import { useEffect, useState } from './lib.js';
-import { byName, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES, isWildcard, matchesFor, zapEntry, alwaysObtainable } from './data.js';
+import { byName, onIsland, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES, isWildcard, matchesFor, zapEntry, alwaysObtainable } from './data.js';
 
 const SAVE_KEY = 'msm2:save';
 const UI_KEY = 'msm2:ui';
@@ -22,7 +22,7 @@ const UI_DEFAULT = {
   db: { q: '', rarity: '', cls: '', elem: '', island: '', status: [] },
   wub: { island: 'Plant Island', type: 'common' },
   isl: { island: '' },
-  zap: { collapsed: {} },
+  zap: { collapsed: {}, sort: 'custom' },
 };
 
 function read(key, fallback) {
@@ -132,6 +132,12 @@ export function closeDetail() { detail = null; notify(); }
 
 export const isOwned = (island, name) => !!save.owned[island]?.[name];
 
+// [owned, total] on an island, null if nothing lives there
+export function islandCount(island) {
+  const list = onIsland.get(island) || [];
+  return list.length ? [list.filter(({ m }) => isOwned(island, m.name)).length, list.length] : null;
+}
+
 export function setOwned(island, name, value) {
   commit((s) => {
     const row = (s.owned[island] ||= {});
@@ -145,13 +151,20 @@ export function isAvailable(name) {
   return !a.until || a.until > Date.now();
 }
 
+// 'vessel', 'starshop' or null for normal breeding. older saves only have chipless + cats
+export function availKind(a) {
+  if (!a) return null;
+  if (a.kind) return a.kind;
+  if (!a.chipless) return null;
+  return (a.cats || []).some((c) => /vessel/i.test(c)) ? 'vessel' : 'starshop';
+}
+
 // available on this particular island? vessels only count on the island you zap them on
 export function availableOn(m, island) {
   const a = save.avail[m.name];
   if (!a || (a.until && a.until <= Date.now())) return false;
-  const vessel = a.kind === 'vessel' || (a.chipless && (a.cats || []).some((c) => /vessel/i.test(c)));
   // the vessel's island, plus islands where it can be bought only while the vessel is out (fire expansion)
-  if (vessel) return !!island && (zapEntry(m)?.island === island || !!m.islands.find((e) => e.island === island)?.withVessel);
+  if (availKind(a) === 'vessel') return !!island && (zapEntry(m)?.island === island || !!m.islands.find((e) => e.island === island)?.withVessel);
   return !a.chipless && !alwaysObtainable(m, island);
 }
 
@@ -169,6 +182,13 @@ export function zapTotals(z) {
 export function zapEggs(z) {
   const e = byName.get(z.monster)?.islands.find((x) => x.island === z.island && x.how === 'Zap');
   return e?.eggs || [];
+}
+
+// n can be over required when more than needed are boxed
+export function wubboxProgress(island, type) {
+  const { list, required } = wubboxList(island, type);
+  const boxed = save.boxed[wubboxKey(island, type)] || {};
+  return { list, required, boxed, n: list.filter((x) => boxed[x]).length };
 }
 
 let derived = null;
@@ -191,9 +211,7 @@ function getDerived() {
   const wubNeeds = new Map();
   for (const island of Object.keys(wubbox)) {
     for (const type of WUBBOX_TYPES) {
-      const { list, required } = wubboxList(island, type);
-      const boxed = save.boxed[wubboxKey(island, type)] || {};
-      const n = list.filter((x) => boxed[x]).length;
+      const { list, required, boxed, n } = wubboxProgress(island, type);
       if (!n || n >= required) continue;
       for (const name of list) {
         if (boxed[name]) continue;

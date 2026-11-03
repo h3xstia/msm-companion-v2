@@ -4,9 +4,8 @@ import { entryTimes, timeLeft, urgency, cx, matches } from './util.js';
 import {
   save, detail, openDetail, closeDetail, isOwned, setOwned, isAvailable, zapEggs, wubNeedsFor, setUi,
 } from './store.js';
-import { EggRow } from './views/zapping.js';
 import { skinOn } from './art.js';
-import { Icon, MonImg, ElemIcons, Rarity, TokenImg, Dialog, Times, IslandIcon } from './ui.js';
+import { Icon, MonImg, ElemIcons, Rarity, TokenImg, Dialog, Times, IslandIcon, EggRow } from './ui.js';
 
 export function EntryRow({ m, e, toggle = true }) {
   const t = entryTimes(e, skinOn(e.island));

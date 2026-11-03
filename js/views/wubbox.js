@@ -1,7 +1,7 @@
 import { html } from '../lib.js';
 import { byName, wubbox, wubboxList, wubboxKey, WUBBOX_TYPES } from '../data.js';
 import { cx, pct, plural } from '../util.js';
-import { save, ui, setUi, commit, openDetail } from '../store.js';
+import { ui, setUi, commit, openDetail, wubboxProgress } from '../store.js';
 import { Icon, MonImg, ElemIcons, Progress, IslandPicker, Empty } from '../ui.js';
 
 const TYPE_MONSTER = { common: 'Wubbox', rare: 'Rare Wubbox', epic: 'Epic Wubbox' };
@@ -11,16 +11,13 @@ export function WubboxView() {
   const island = wubbox[ui.wub.island] ? ui.wub.island : Object.keys(wubbox)[0];
   const types = WUBBOX_TYPES.filter((t) => wubboxList(island, t).list.length);
   const type = types.includes(ui.wub.type) ? ui.wub.type : types[0];
-  const { list, required } = wubboxList(island, type);
+  const { list, required, boxed, n } = wubboxProgress(island, type);
   const key = wubboxKey(island, type);
-  const boxed = save.boxed[key] || {};
-  const n = list.filter((x) => boxed[x]).length;
   const count = (isl, t = type) => {
     if (!wubbox[isl]) return null;
-    const w = wubboxList(isl, t);
+    const w = wubboxProgress(isl, t);
     if (!w.list.length) return t === type ? null : [0, 0]; // hide islands without this Wubbox type
-    const b = save.boxed[wubboxKey(isl, t)] || {};
-    return [Math.min(w.required, w.list.filter((x) => b[x]).length), w.required];
+    return [Math.min(w.required, w.n), w.required];
   };
   const toggle = (name) => commit((s) => {
     const row = (s.boxed[key] ||= {});

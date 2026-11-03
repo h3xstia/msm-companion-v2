@@ -1,7 +1,7 @@
 import { html, useEffect, useState } from '../lib.js';
 import { byName, howLabel, entryDetails, islandByName, alwaysObtainable, zapEntry } from '../data.js';
 import { cx, plural, relTime } from '../util.js';
-import { save, commit, isAvailable, openDetail, purgeExpired, toast, setUi } from '../store.js';
+import { save, commit, isAvailable, openDetail, purgeExpired, toast, setUi, availKind } from '../store.js';
 import { syncFromWiki, wikiStale, WIKI_PAGE } from '../wiki.js';
 import { Deadline } from '../overlays.js';
 import { Icon, MonImg, Rarity, Empty, IslandIcon } from '../ui.js';
@@ -10,7 +10,7 @@ let autoTried = false;
 
 // why it's on the list when it isn't plain breeding: a vessel to zap, or a starshop buy
 function Reason({ m, a }) {
-  const kind = a.kind || (a.chipless ? (a.cats || []).some((c) => /vessel/i.test(c)) ? 'vessel' : 'starshop' : null);
+  const kind = availKind(a);
   if (kind === 'vessel') {
     const isl = zapEntry(m)?.island;
     return html`<span class="reason reason-vessel" title=${isl ? `Vessel to zap on ${isl}` : 'Vessel'}>Vessel${isl ? ' · ' + isl.replace(' Island', '') : ''}</span>
@@ -32,7 +32,7 @@ function AvailCard({ name, go }) {
         <div class="meta"><${Rarity} r=${m.rarity} /><${Reason} m=${m} a=${a} /></div>
       </div>
     </button>
-    <div class="avail-islands">${m.islands.filter((e) => a.kind === 'vessel'
+    <div class="avail-islands">${m.islands.filter((e) => availKind(a) === 'vessel'
         ? e.how === 'Zap' || e.withVessel // the vessel's island, and where it's buyable while the vessel is out
         : !islandByName.get(e.island)?.hideInAvailable && !alwaysObtainable(m, e.island)).map((e) => {
       const how = e.combo ? e.combo.join(' + ') : [howLabel(e), ...entryDetails(m, e)].join(' · ');

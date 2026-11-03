@@ -19,7 +19,7 @@ import { wubbox } from './data.js';
 
 const VIEWS = {
   collection: { label: 'Collection', icon: 'collection', View: CollectionView },
-  breed: { label: 'Breed Sim', icon: 'breed', View: BreedView },
+  breed: { label: 'Breed', icon: 'breed', View: BreedView },
   available: { label: 'Available', icon: 'available', View: AvailableView },
   database: { label: 'Database', icon: 'database', View: DatabaseView },
   zapping: { label: 'Zapping', icon: 'zap', View: ZappingView },

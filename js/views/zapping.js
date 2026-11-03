@@ -1,9 +1,9 @@
 import { html, useEffect, useMemo, useState } from '../lib.js';
-import { byName, onIsland, ZAP_ISLANDS, matchesFor, isWildcard } from '../data.js';
+import { byName, onIsland, ZAP_ISLANDS } from '../data.js';
 import { cx, matches, pct, plural, suggestDeadline, urgency } from '../util.js';
-import { save, ui, setUi, commit, isAvailable, zapTotals, zapEggs, openDetail, isOwned } from '../store.js';
+import { save, ui, setUi, commit, zapTotals, zapEggs, isOwned, availKind } from '../store.js';
 import { Deadline } from '../overlays.js';
-import { Icon, MonImg, TokenImg, Empty, Dialog, Segmented, SearchBox, Stepper } from '../ui.js';
+import { Icon, MonImg, Empty, Dialog, Segmented, SearchBox, EggRow } from '../ui.js';
 
 const zapTargets = (island) => (onIsland.get(island) || []).filter(({ e }) => e.how === 'Zap');
 
@@ -49,7 +49,7 @@ function TrackDialog({ open, onClose }) {
       <${SearchBox} value=${q} onInput=${setQ} autofocus />
       <div class="pick-list">${list.map(({ m, e }) => html`<button class="pick-row" key=${m.name} onClick=${() => choose(m, e)}>
         <${MonImg} m=${m} island=${island} size=${36} /><span class="grow">${m.name}${isOwned(island, m.name) ? html` <span class="muted small">· owned</span>` : ''}
-          ${save.avail[m.name]?.kind === 'vessel' && html` <span class="reason reason-vessel">Vessel available</span>`}</span>
+          ${availKind(save.avail[m.name]) === 'vessel' && html` <span class="reason reason-vessel">Vessel available</span>`}</span>
         <span class="muted small">${e.limit || 'No time limit'} · ${plural(e.eggs.reduce((n, [, c]) => n + c, 0), 'egg')}</span></button>`)}
         ${!list.length && html`<p class="muted pad">No zap targets found.</p>`}</div>`
     : html`
@@ -72,37 +72,19 @@ function EditDeadline({ zap, onClose }) {
   <//>`;
 }
 
-// target: show the zap target in the head instead of the egg (used in the monster drawer)
-export function EggRow({ z, egg, need, target }) {
-  const sent = z.sent[egg] || 0, bred = z.bred[egg] || 0;
-  const done = sent >= need;
-  const partial = !done && sent + bred > 0;
-  // wildcard eggs: any monster that fits and is available counts
-  const availNow = done ? [] : matchesFor(egg).filter((m) => isAvailable(m.name)).map((m) => m.name);
-  const avail = availNow.length > 0;
-  const set = (field, v) => commit((s) => { s.zaps.find((x) => x.id === z.id)[field][egg] = v; });
-  return html`<div class=${cx('egg', done && 'done', partial && 'partial', avail && 'avail')}>
-    <div class="egg-head">
-      ${target
-        ? html`<${MonImg} m=${byName.get(z.monster)} island=${z.island} size=${36} />`
-        : html`<button class="egg-img" onClick=${() => byName.has(egg) && openDetail(egg, z.island)} aria-label=${egg}>
-          <${TokenImg} token=${egg} island=${z.island} size=${36} /></button>`}
-      <div class="egg-name"><strong>${target ? z.monster : egg}</strong>
-        ${target && html`<span class="muted small">${z.island}${isWildcard(egg) ? ' · as ' + egg : ''}</span>`}
-        <span class="egg-status">${done ? html`<span class="c-done">Done</span>` : need - sent - bred > 0 ? `${need - sent - bred} left` : html`<span class="c-bred">${need - sent} to send</span>`}
-          ${avail && html`<span class="tag tag-avail" title=${'Available now: ' + availNow.join(', ')}>Available</span>`}</span></div>
-      <span class="egg-count" title=${`${Math.min(sent + bred, need)} of ${need} (${sent} sent, ${bred} bred)`}>${Math.min(sent + bred, need)}<small>/${need}</small></span>
-    </div>
-    <div class="progress split-bar egg-bar"><span class="sent" style=${{ width: pct(Math.min(sent, need), need) + '%' }}></span>
-      <span class="bred" style=${{ width: pct(Math.min(bred, need - Math.min(sent, need)), need) + '%' }}></span></div>
-    <div class="egg-counts">
-      <label class="c-sent"><span>Sent</span><${Stepper} label="sent" value=${sent} max=${need} onChange=${(v) => set('sent', v)} /></label>
-      <label class="c-bred"><span>Bred</span><${Stepper} label="bred" value=${bred} max=${need} onChange=${(v) => set('bred', v)} /></label>
-    </div>
-  </div>`;
+// custom = the order you dragged them into
+const SORTS = [['custom', 'Custom'], ['deadline', 'Deadline'], ['left', 'Fewest left']];
+// no deadline after dated ones, expired last
+const deadlineKey = (z) => urgency(z.deadline) === 'expired' ? 2e15 : z.deadline || 1e15;
+// fully sent ones go to the bottom
+const leftKey = (z) => { const t = zapTotals(z); return t.sent >= t.need ? 1e9 : t.need - t.have; };
+function sorted(zaps, sort) {
+  if (sort === 'deadline') return [...zaps].sort((a, b) => deadlineKey(a) - deadlineKey(b));
+  if (sort === 'left') return [...zaps].sort((a, b) => leftKey(a) - leftKey(b) || deadlineKey(a) - deadlineKey(b));
+  return zaps;
 }
 
-function ZapCard({ z, index, count, drag, onEditDeadline }) {
+function ZapCard({ z, index, count, drag, onEditDeadline, reorder }) {
   const m = byName.get(z.monster);
   const eggs = zapEggs(z);
   const t = zapTotals(z);
@@ -110,17 +92,17 @@ function ZapCard({ z, index, count, drag, onEditDeadline }) {
   const move = (dir) => commit((s) => { const [it] = s.zaps.splice(index, 1); s.zaps.splice(index + dir, 0, it); });
   if (!m) return null;
   return html`<article class=${cx('zap-card', 'zap-' + urgency(z.deadline), drag.over === z.id && 'drag-over')}
-    onDragOver=${(e) => { e.preventDefault(); drag.setOver(z.id); }} onDrop=${(e) => { e.preventDefault(); drag.drop(z.id); }}>
+    onDragOver=${reorder && ((e) => { e.preventDefault(); drag.setOver(z.id); })} onDrop=${reorder && ((e) => { e.preventDefault(); drag.drop(z.id); })}>
     <header class="zap-head">
-      <span class="grip" draggable="true" title="Drag to reorder" onDragStart=${() => drag.start(z.id)} onDragEnd=${drag.end}><${Icon} name="grip" /></span>
+      ${reorder && html`<span class="grip" draggable="true" title="Drag to reorder" onDragStart=${() => drag.start(z.id)} onDragEnd=${drag.end}><${Icon} name="grip" /></span>`}
       <button class="zap-title" onClick=${() => setUi('zap', { collapsed: { ...ui.zap.collapsed, [z.id]: !collapsed } })} aria-expanded=${!collapsed}>
         <${MonImg} m=${m} island=${z.island} size=${48} />
         <span><strong>${m.name}</strong><span class="muted small">${z.island}</span></span>
       </button>
       <button class="deadline-btn" onClick=${() => onEditDeadline(z)} title="Change deadline"><${Deadline} until=${z.deadline} /></button>
       <div class="zap-tools">
-        <button class="icon-btn sm" aria-label="Move up" disabled=${index === 0} onClick=${() => move(-1)}><${Icon} name="up" /></button>
-        <button class="icon-btn sm" aria-label="Move down" disabled=${index === count - 1} onClick=${() => move(1)}><${Icon} name="down" /></button>
+        ${reorder && html`<button class="icon-btn sm" aria-label="Move up" disabled=${index === 0} onClick=${() => move(-1)}><${Icon} name="up" /></button>
+        <button class="icon-btn sm" aria-label="Move down" disabled=${index === count - 1} onClick=${() => move(1)}><${Icon} name="down" /></button>`}
         <button class="icon-btn sm danger" aria-label=${'Stop tracking ' + m.name}
           onClick=${() => commit((s) => { s.zaps = s.zaps.filter((x) => x.id !== z.id); }, { undoable: `Stopped tracking ${m.name}` })}><${Icon} name="trash" /></button>
       </div>
@@ -140,6 +122,9 @@ export function ZappingView() {
   const [dragId, setDragId] = useState(null);
   const [over, setOver] = useState(null);
   const zaps = save.zaps;
+  const sort = ui.zap.sort;
+  const reorder = sort === 'custom';
+  const shown = sorted(zaps, sort);
   const drag = {
     over,
     setOver: (id) => dragId && id !== over && setOver(id),
@@ -162,11 +147,13 @@ export function ZappingView() {
     <header class="pane-head">
       <div><h1>Zapping</h1><p class="muted">
         ${plural(zaps.length, 'target')} tracked${urgent ? html` · <span class="c-warn">${urgent} ending soon</span>` : ''}${expired ? html` · <span class="danger">${expired} expired</span>` : ''}${done ? ` · ${done} complete` : ''}</p></div>
-      <div class="head-actions"><button class="btn primary" onClick=${() => setTracking(true)}><${Icon} name="plus" size=${16} />Track</button></div>
+      <div class="head-actions">
+        ${zaps.length > 1 && html`<${Segmented} value=${sort} options=${SORTS} onChange=${(v) => setUi('zap', { sort: v })} />`}
+        <button class="btn primary" onClick=${() => setTracking(true)}><${Icon} name="plus" size=${16} />Track</button></div>
     </header>
     ${zaps.length
-      ? html`<div class="zap-list">${zaps.map((z, i) => html`<${ZapCard} key=${z.id} z=${z} index=${i} count=${zaps.length} drag=${drag} onEditDeadline=${setEditing} />`)}</div>
-        <p class="hint">Sent = eggs already in the target. Bred = eggs you have ready to send. Drag the handle or use the arrows to reorder.</p>`
+      ? html`<div class="zap-list">${shown.map((z, i) => html`<${ZapCard} key=${z.id} z=${z} index=${i} count=${zaps.length} drag=${drag} onEditDeadline=${setEditing} reorder=${reorder} />`)}</div>
+        <p class="hint">Sent = eggs already in the target. Bred = eggs you have ready to send. ${reorder ? 'Drag the handle or use the arrows to reorder.' : 'Switch to Custom to reorder.'}</p>`
       : html`<${Empty} icon="zap" title="No zap targets yet">Track a Wublin, Amber or Celestial target to count the eggs it needs.
           <br /><button class="btn primary" onClick=${() => setTracking(true)}>Track a target</button><//>`}
     <${TrackDialog} open=${tracking} onClose=${() => setTracking(false)} />

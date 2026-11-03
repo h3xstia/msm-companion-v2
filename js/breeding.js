@@ -1,5 +1,5 @@
 // breeding rules (based on the msm wiki)
-import { monsters, islands, onIsland, satisfies } from './data.js';
+import { monsters, islands, onIsland, satisfies, notParents } from './data.js';
 
 const ISLAND_ELEMENTS = Object.fromEntries(islands.filter((i) => i.elements).map((i) => [i.name, i.elements]));
 
@@ -21,16 +21,21 @@ function elementsFit(m, isl) {
 
 const canParent = (m, isl) => (m.rarity === 'Common' || m.rarity === 'Rare') && elementsFit(m, isl);
 
-// epics only come from listed combos, rare singles from two triples
-function isElementResult(m, isl) {
-  return m.rarity !== 'Epic' && elementsFit(m, isl);
-}
-
 export function breedable(e) {
   if (!e.combo) return false;
   if (e.how === 'Breed') return true;
   // teleport entries with a time can be rebred there (shanty, mythical etc)
   return e.how === 'Teleport' && !!e.time;
+}
+
+// island -> listed combos that can be bred there
+const combosOn = new Map();
+for (const m of monsters) {
+  for (const e of m.islands) {
+    if (!breedable(e)) continue;
+    if (!combosOn.has(e.island)) combosOn.set(e.island, []);
+    combosOn.get(e.island).push(e.combo);
+  }
 }
 
 function comboMatches(combo, p1, p2, isl) {
@@ -73,7 +78,7 @@ export function computeOffspring(p1, p2, island) {
       } else if (isParent) {
         // the parents (or their rare versions) can come out as a failed attempt
         if (!natSingles && !rareSingle) found[e.island] = e;
-      } else if (disjoint && setKey(m.elements) === unionKey && isElementResult(m, e.island) &&
+      } else if (disjoint && m.rarity !== 'Epic' && setKey(m.elements) === unionKey && elementsFit(m, e.island) &&
         canParent(p1, e.island) && canParent(p2, e.island)) {
         found[e.island] = e;
       }
@@ -91,21 +96,16 @@ export function sharesIsland(a, b) {
   for (const isl of Object.keys(ISLAND_ELEMENTS)) {
     if (canParent(a, isl) && canParent(b, isl)) return true;
   }
-  for (const m of monsters) {
-    for (const e of m.islands) {
-      if (breedable(e) && hasIsland(a, e.island) && hasIsland(b, e.island) && comboMatches(e.combo, a, b, e.island)) return true;
-    }
+  for (const { island } of a.islands) {
+    if (!hasIsland(b, island)) continue;
+    if ((combosOn.get(island) || []).some((combo) => comboMatches(combo, a, b, island))) return true;
   }
   return false;
 }
 
-const FIRE_EXCLUDED = new Set(['Bisonorus', 'Yelmut', 'Flum Ox', 'Krillby', 'Edamimi', 'PongPing', 'Incisaur',
-  'Tiawa', 'Candelavra', 'Drummidary', 'Bowhead', 'Tuskski', 'Gnarls']);
-const EXCLUDED_CLASSES = new Set(['Supernatural', 'Primordial', 'Titansoul', 'Dipster', 'Celestial']);
-
 export const parentCandidates = monsters.filter((m) => {
   if (m.rarity !== 'Common' && m.rarity !== 'Rare') return false;
-  if (EXCLUDED_CLASSES.has(m.class) || m.name === 'Mimic' || FIRE_EXCLUDED.has(m.name)) return false;
+  if (notParents.classes.includes(m.class) || notParents.names.includes(m.name)) return false;
   if (m.class === 'Legendary' && m.name !== 'Shugabush') return false;
   if (m.class === 'Ethereal' && m.elements.length >= 3) return false;
   if (m.class === 'Paironormal' && m.islands.every((e) => e.island === 'Minor Paironormal Carnival')) return false;

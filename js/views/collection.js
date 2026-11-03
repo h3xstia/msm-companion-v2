@@ -2,13 +2,8 @@ import { html } from '../lib.js';
 import { onIsland, entryDetails, howLabel } from '../data.js';
 import { entryTimes, cx, matches, pct, plural } from '../util.js';
 import { islandIcon, skinName, skinOn } from '../art.js';
-import { save, ui, setUi, commit, isOwned, openDetail } from '../store.js';
+import { ui, setUi, commit, isOwned, setOwned, openDetail, islandCount } from '../store.js';
 import { Icon, MonImg, ElemIcons, StatusTags, Progress, IslandPicker, RarityChips, SearchBox, Empty, Chip, Times } from '../ui.js';
-
-export const islandCount = (island) => {
-  const list = onIsland.get(island) || [];
-  return list.length ? [list.filter(({ m }) => isOwned(island, m.name)).length, list.length] : null;
-};
 
 function howLine(m, e) {
   if (e.combo) return e.combo.join(' + ');
@@ -18,10 +13,7 @@ function howLine(m, e) {
 function MonsterCard({ m, e, island }) {
   const owned = isOwned(island, m.name);
   const t = entryTimes(e, skinOn(island));
-  const toggle = () => commit((s) => {
-    const row = (s.owned[island] ||= {});
-    if (owned) delete row[m.name]; else row[m.name] = 1;
-  });
+  const toggle = () => setOwned(island, m.name, !owned);
   return html`<div class=${cx('mon-card', owned && 'owned')}>
     <button class="mon-card-hit" aria-pressed=${owned} aria-label=${(owned ? 'Owned: ' : 'Not owned: ') + m.name} onClick=${toggle}></button>
     <div class="mon-card-img"><${MonImg} m=${m} island=${island} size=${56} />

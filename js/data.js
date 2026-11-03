@@ -3,6 +3,7 @@ const RAW = window.MSM;
 export const monsters = RAW.monsters;
 export const islands = RAW.islands;
 export const wubbox = RAW.wubbox;
+export const notParents = RAW.notParents;
 
 export const byName = new Map(monsters.map((m) => [m.name, m]));
 export const islandByName = new Map(islands.map((i) => [i.name, i]));
