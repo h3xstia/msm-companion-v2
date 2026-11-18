@@ -19,7 +19,7 @@
 // ISLAND ENTRY FIELDS (one per island the monster can live on)
 //   island    must match a name in islands.js
 //   how       how you get it on that island - one of:
-//               "Breed"       breed it there; needs combo
+//               "Breed"       breed it there; needs combo (or a note if the combo isn't known yet)
 //               "Teleport"    teleport it in; may also have combo + time if it can be re-bred there
 //               "Zap"         zap it (Wublin / Amber / Celestial); needs eggs, may have limit
 //               "Purchase"    buy it; put the price in cost
@@ -2060,6 +2060,12 @@ MSM.monsters = [
     islands: [
       { island: "Magical Sanctum", how: "Breed", combo: ["Larvaluss", "Cahoot"], time: "2d 3h 49m" },
     ] },
+  { name: "Epic Gob", rarity: "Epic", class: "Magical", elements: ["Plant", "Light"],
+    islands: [
+      { island: "Light Island", how: "Breed", note: "Combo not known yet" },
+      { island: "Magical Nexus", how: "Teleport" },
+      { island: "Mirror Light Island", how: "Breed", note: "Combo not known yet" },
+    ] },
   { name: "Tapricorn", rarity: "Common", class: "Magical", elements: ["Plant", "Water", "Psychic"],
     islands: [
       { island: "Psychic Island", how: "Breed", combo: ["Bonkers", "Toe Jammer"], time: "16h" },
@@ -3316,6 +3322,13 @@ MSM.monsters = [
           ["Epic Pummel", 1], ["Epic Shellbeat", 1], ["Epic Quarrister", 1], ["Epic Phangler", 1],
         ] },
     ] },
+  { name: "Epic Maulch", rarity: "Epic", class: "Supernatural", elements: ["Electricity"],
+    islands: [
+      { island: "Wublin Island", how: "Zap", eggs: [
+          ["Epic Noggin", 1], ["Epic Furcorn", 1], ["Epic Flowah", 1], ["Epic Clamble", 1], ["Epic Spunge", 1],
+          ["Epic Pummel", 1], ["Epic Quarrister", 1], ["Epic Barrb", 1], ["Epic Entbrat", 1], ["Epic Edamimi", 1],
+        ] },
+    ] },
   { name: "Shugabush", rarity: "Common", class: "Legendary", elements: ["Legendary"],
     islands: [
       { island: "Plant Island", how: "Breed", combo: ["Bowgart", "Clamble"], time: "1d 11h" },
@@ -3384,6 +3397,10 @@ MSM.monsters = [
       { island: "Mirror Earth Island", how: "Purchase", time: "8h", cost: "100 Relics" },
     ] },
   { name: "Charrkoll", rarity: "Common", class: "Legendary", elements: ["Legendary"],
+    islands: [
+      { island: "Fire Haven", how: "Purchase", time: "8h", cost: "100 Relics" },
+    ] },
+  { name: "First Verchuoso", rarity: "Common", class: "Legendary", elements: ["Legendary"],
     islands: [
       { island: "Fire Haven", how: "Purchase", time: "8h", cost: "100 Relics" },
     ] },
@@ -4418,6 +4435,31 @@ MSM.monsters = [
       { island: "Mirror Faerie Island", how: "Dig" },
       { island: "Mirror Bone Island", how: "Dig" },
     ] },
+  { name: "Aquatic Fa", rarity: "Rare", class: "Dipster", elements: ["Dipster"],
+    islands: [
+      { island: "Plant Island", how: "Dig" },
+      { island: "Cold Island", how: "Dig" },
+      { island: "Air Island", how: "Dig" },
+      { island: "Water Island", how: "Dig" },
+      { island: "Earth Island", how: "Dig" },
+      { island: "Fire Haven", how: "Dig" },
+      { island: "Fire Oasis", how: "Dig" },
+      { island: "Light Island", how: "Dig" },
+      { island: "Psychic Island", how: "Dig" },
+      { island: "Faerie Island", how: "Dig" },
+      { island: "Bone Island", how: "Dig" },
+      { island: "Ethereal Island", how: "Dig" },
+      { island: "Magical Sanctum", how: "Dig" },
+      { island: "Mirror Plant Island", how: "Dig" },
+      { island: "Mirror Cold Island", how: "Dig" },
+      { island: "Mirror Air Island", how: "Dig" },
+      { island: "Mirror Water Island", how: "Dig" },
+      { island: "Mirror Earth Island", how: "Dig" },
+      { island: "Mirror Light Island", how: "Dig" },
+      { island: "Mirror Psychic Island", how: "Dig" },
+      { island: "Mirror Faerie Island", how: "Dig" },
+      { island: "Mirror Bone Island", how: "Dig" },
+    ] },
   { name: "King Do", rarity: "Epic", class: "Dipster", elements: ["Dipster"],
     islands: [
       { island: "Plant Island", how: "Dig" },
@@ -4493,7 +4535,36 @@ MSM.monsters = [
       { island: "Mirror Faerie Island", how: "Dig" },
       { island: "Mirror Bone Island", how: "Dig" },
     ] },
+  { name: "Knight Fa", rarity: "Epic", class: "Dipster", elements: ["Dipster"],
+    islands: [
+      { island: "Plant Island", how: "Dig" },
+      { island: "Cold Island", how: "Dig" },
+      { island: "Air Island", how: "Dig" },
+      { island: "Water Island", how: "Dig" },
+      { island: "Earth Island", how: "Dig" },
+      { island: "Fire Haven", how: "Dig" },
+      { island: "Fire Oasis", how: "Dig" },
+      { island: "Light Island", how: "Dig" },
+      { island: "Psychic Island", how: "Dig" },
+      { island: "Faerie Island", how: "Dig" },
+      { island: "Bone Island", how: "Dig" },
+      { island: "Ethereal Island", how: "Dig" },
+      { island: "Magical Sanctum", how: "Dig" },
+      { island: "Mirror Plant Island", how: "Dig" },
+      { island: "Mirror Cold Island", how: "Dig" },
+      { island: "Mirror Air Island", how: "Dig" },
+      { island: "Mirror Water Island", how: "Dig" },
+      { island: "Mirror Earth Island", how: "Dig" },
+      { island: "Mirror Light Island", how: "Dig" },
+      { island: "Mirror Psychic Island", how: "Dig" },
+      { island: "Mirror Faerie Island", how: "Dig" },
+      { island: "Mirror Bone Island", how: "Dig" },
+    ] },
   { name: "Superno-Fa", rarity: "Common", class: "Dipster", elements: ["Dipster"],
+    islands: [
+      { island: "Celestial Island", how: "Dig" },
+    ] },
+  { name: "Sol-stice", rarity: "Common", class: "Dipster", elements: ["Dipster"],
     islands: [
       { island: "Celestial Island", how: "Dig" },
     ] },

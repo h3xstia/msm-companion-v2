@@ -115,8 +115,9 @@ def main():
             how = e.get("how")
             if how not in HOWS:
                 errors.append(f"{where}: how {how!r} should be one of {sorted(HOWS)}")
-            if how == "Breed" and "combo" not in e:
-                errors.append(f"{where}: Breed needs a combo")
+            # a note explains a combo that isn't known yet
+            if how == "Breed" and "combo" not in e and "note" not in e:
+                errors.append(f"{where}: Breed needs a combo (or a note saying why there isn't one)")
             if how == "Zap" and "eggs" not in e:
                 errors.append(f"{where}: Zap needs eggs")
             if "combo" in e:
