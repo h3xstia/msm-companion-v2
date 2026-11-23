@@ -58,7 +58,8 @@ export function howLabel(e) {
 export function entryDetails(m, e) {
   const out = [];
   if (e.cost) out.push(e.cost);
-  if (e.how === 'Teleport') {
+  // the teleport level only matters when you teleport it in, not when it's bred there
+  if (e.how === 'Teleport' && !e.combo) {
     const lvl = islandByName.get(e.island)?.teleportLevel;
     if (lvl) out.push('Level ' + lvl);
   }
