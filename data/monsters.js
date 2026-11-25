@@ -2062,9 +2062,9 @@ MSM.monsters = [
     ] },
   { name: "Epic Gob", rarity: "Epic", class: "Magical", elements: ["Plant", "Light"],
     islands: [
-      { island: "Light Island", how: "Breed", note: "Combo not known yet" },
+      { island: "Light Island", how: "Breed", combo: ["Fiddlement", "Furcorn"], time: "1d 7h 42m" },
       { island: "Magical Nexus", how: "Teleport" },
-      { island: "Mirror Light Island", how: "Breed", note: "Combo not known yet" },
+      { island: "Mirror Light Island", how: "Breed", combo: ["Fiddlement", "Furcorn"], time: "1d 7h 42m" },
     ] },
   { name: "Tapricorn", rarity: "Common", class: "Magical", elements: ["Plant", "Water", "Psychic"],
     islands: [
